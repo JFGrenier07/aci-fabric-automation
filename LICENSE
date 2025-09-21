@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 ACI Fabric Automation Engine
+Copyright (c) 2024 Jean-François Grenier (JFGrenier07)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,45 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Third-Party Licenses and Acknowledgments
+
+This project incorporates or depends on the following third-party software:
+
+### Ansible and cisco.aci Collection
+- **License**: GNU General Public License v3.0+
+- **Copyright**: Red Hat, Inc. and Cisco Systems, Inc.
+- **Usage**: Ansible automation framework and ACI modules
+- **Source**: https://github.com/ansible/ansible and https://github.com/CiscoDevNet/ansible-aci
+
+### Python Dependencies
+- **pandas**: BSD 3-Clause License (Copyright: NumFOCUS)
+- **openpyxl**: MIT License (Copyright: Eric Gazoni, Charlie Clark)
+- **PyYAML**: MIT License (Copyright: Ingy döt Net, Kirill Simonov)
+- **Jinja2**: BSD 3-Clause License (Copyright: Pallets)
+
+### Documentation Framework
+- **Mermaid**: MIT License (Copyright: Mermaid contributors)
+- **CommonMark**: BSD 2-Clause License
+
+## Disclaimer
+
+This software is provided for educational and automation purposes. Users are responsible for:
+- Ensuring compliance with their organization's policies
+- Testing in non-production environments before deployment
+- Understanding the impact of network configuration changes
+- Maintaining proper backups and rollback procedures
+
+The authors are not responsible for any network outages, data loss, or other damages resulting from the use of this software.
+
+## Trademark Notice
+
+- Cisco® and ACI® are registered trademarks of Cisco Systems, Inc.
+- Ansible® is a registered trademark of Red Hat, Inc.
+- All other trademarks are property of their respective owners.
+
+## Export Control
+
+This software may be subject to export control laws and regulations. Users are responsible for compliance with applicable export control requirements.
