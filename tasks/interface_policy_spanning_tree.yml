@@ -1,0 +1,37 @@
+---
+# Tâches pour gérer les policies Spanning Tree avec read_csv
+- name: "Read CSV Spanning Tree Policies"
+  read_csv:
+    path: "{{ csv_dir }}/interface_policy_spanning_tree.csv"
+    delimiter: ','
+  register: stp_policy_csv
+  when: (csv_dir + '/interface_policy_spanning_tree.csv') is file
+
+- name: "Afficher les policies Spanning Tree détectées"
+  debug:
+    msg: "Policies Spanning Tree à traiter: {{ stp_policy_csv.list | map(attribute='stp_policy') | list }}"
+  when: stp_policy_csv is defined and stp_policy_csv.list is defined
+
+- name: "{{ item.stp_policy }} - Manage spanning tree interface policies (stp:IfPol)"
+  cisco.aci.aci_interface_policy_spanning_tree:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    stp_policy: "{{ item.stp_policy }}"
+    bpdu_guard: "{{ item.bpdu_guard | default('disabled') }}"
+    bpdu_filter: "{{ item.bpdu_filter | default('disabled') }}"
+    description: "{{ item.description | default('') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ stp_policy_csv.list }}"
+  when:
+    - stp_policy_csv is defined
+    - stp_policy_csv.list is defined
+    - item.stp_policy is defined
+    - item.stp_policy | length > 0
+  tags:
+    - aci_interface_policy_spanning_tree
+    - interface_policies
+    - infrastructure

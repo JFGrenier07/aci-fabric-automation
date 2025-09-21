@@ -1,0 +1,38 @@
+---
+- name: "Read CSV contract_subject"
+  read_csv:
+    path: "{{ csv_dir }}/contract_subject.csv"
+    delimiter: ','
+  register: contract_subject_csv
+  when: (csv_dir + '/contract_subject.csv') is file
+
+- name: "Afficher les Contract Subject détectés"
+  debug:
+    msg: "Contract Subject à traiter: {{ contract_subject_csv.list | map(attribute='subject') | list }}"
+  when: contract_subject_csv is defined and contract_subject_csv.list is defined
+
+- name: "{{ item.subject }} - Créer les Subjects ACI"
+  cisco.aci.aci_contract_subject:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    contract: "{{ item.contract }}"
+    subject: "{{ item.subject }}"
+    description: "{{ item.description | default(omit) }}"
+    reverse_filter: "{{ item.reverse_filter | default(true) }}"
+    priority: "{{ item.priority | default('unspecified') }}"
+    dscp: "{{ item.dscp | default('unspecified') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ contract_subject_csv.list }}"
+  when:
+    - contract_subject_csv is defined
+    - contract_subject_csv.list is defined
+    - item.subject is defined
+    - item.subject | length > 0
+  tags:
+    - subjects
+    - aci_subject

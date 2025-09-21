@@ -1,0 +1,40 @@
+---
+# Tâches pour gérer les associations Domain-VLAN Pool avec read_csv
+- name: "Read CSV Domain to VLAN Pool"
+  read_csv:
+    path: "{{ csv_dir }}/domain_to_vlan_pool.csv"
+    delimiter: ','
+  register: domain_to_vlan_pool_csv
+  when: (csv_dir + '/domain_to_vlan_pool.csv') is file
+
+- name: "Afficher les associations Domain-VLAN Pool détectées"
+  debug:
+    msg: "Associations Domain-VLAN Pool à traiter: {{ domain_to_vlan_pool_csv.list | map(attribute='domain') | list }}"
+  when: domain_to_vlan_pool_csv is defined and domain_to_vlan_pool_csv.list is defined
+
+- name: "{{ item.domain }}-{{ item.vlan_pool }} - Associer Domain au VLAN Pool ACI"
+  cisco.aci.aci_domain_to_vlan_pool:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    domain: "{{ item.domain }}"
+    domain_type: "{{ item.domain_type }}"
+    pool: "{{ item.vlan_pool }}"
+    pool_allocation_mode: "{{ item.pool_allocation_mode | default('static') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ domain_to_vlan_pool_csv.list }}"
+  when: 
+    - domain_to_vlan_pool_csv is defined
+    - domain_to_vlan_pool_csv.list is defined
+    - item.domain is defined
+    - item.domain | length > 0
+    - item.domain_type is defined
+    - item.domain_type | length > 0
+    - item.vlan_pool is defined
+    - item.vlan_pool | length > 0
+  tags:
+    - domain_to_vlan_pool
+    - aci_domain_to_vlan_pool

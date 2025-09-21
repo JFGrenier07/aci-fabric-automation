@@ -1,0 +1,46 @@
+---
+# Tâches pour gérer les associations EPG-Contract avec read_csv
+- name: "Read CSV EPG to Contract"
+  read_csv:
+    path: "{{ csv_dir }}/epg_to_contract.csv"
+    delimiter: ','
+  register: epg_to_contract_csv
+  when: (csv_dir + '/epg_to_contract.csv') is file
+
+- name: "Afficher les associations EPG-Contract détectées"
+  debug:
+    msg: "Associations EPG-Contract à traiter: {{ epg_to_contract_csv.list | map(attribute='epg') | list }}"
+  when: epg_to_contract_csv is defined and epg_to_contract_csv.list is defined
+
+- name: "{{ item.epg }}-{{ item.contract }} - Associer EPG au Contract ACI"
+  cisco.aci.aci_epg_to_contract:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    ap: "{{ item.ap }}"
+    epg: "{{ item.epg }}"
+    contract: "{{ item.contract }}"
+    contract_type: "{{ item.contract_type }}"
+    priority: "{{ item.priority | default('unspecified') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ epg_to_contract_csv.list }}"
+  when: 
+    - epg_to_contract_csv is defined
+    - epg_to_contract_csv.list is defined
+    - item.tenant is defined
+    - item.tenant | length > 0
+    - item.ap is defined
+    - item.ap | length > 0
+    - item.epg is defined
+    - item.epg | length > 0
+    - item.contract is defined
+    - item.contract | length > 0
+    - item.contract_type is defined
+    - item.contract_type | length > 0
+  tags:
+    - epg_to_contract
+    - aci_epg_to_contract

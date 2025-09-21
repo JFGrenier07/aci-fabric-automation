@@ -1,0 +1,42 @@
+---
+# Tâches pour gérer les BGP Timers Policies avec read_csv
+- name: "Read CSV bgp_timers_policy"
+  read_csv:
+    path: "{{ csv_dir }}/bgp_timers_policy.csv"
+    delimiter: ','
+  register: bgp_timers_policy_csv
+  when: (csv_dir + '/bgp_timers_policy.csv') is file
+
+- name: "Afficher les BGP Timers Policies détectées"
+  debug:
+    msg: "BGP Timers Policies à traiter: {{ bgp_timers_policy_csv.list | map(attribute='bgp_timers_policy') | list }}"
+  when: bgp_timers_policy_csv is defined and bgp_timers_policy_csv.list is defined
+
+- name: "{{ item.tenant }}/{{ item.bgp_timers_policy }} - Créer la BGP Timers Policy ACI"
+  cisco.aci.aci_bgp_timers_policy:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    bgp_timers_policy: "{{ item.bgp_timers_policy }}"
+    graceful_restart_controls: "{{ item.graceful_restart_controls | default(omit) }}"
+    hold_interval: "{{ item.hold_interval | default(omit) }}"
+    keepalive_interval: "{{ item.keepalive_interval | default(omit) }}"
+    max_as_limit: "{{ item.max_as_limit | default(omit) }}"
+    stale_interval: "{{ item.stale_interval | default(omit) }}"
+    description: "{{ item.description | default(omit) }}"
+    annotation: ""
+    state: "{{ global_state }}"
+  loop: "{{ bgp_timers_policy_csv.list }}"
+  when: 
+    - bgp_timers_policy_csv is defined
+    - bgp_timers_policy_csv.list is defined
+    - item.tenant is defined
+    - item.tenant | length > 0
+    - item.bgp_timers_policy is defined
+    - item.bgp_timers_policy | length > 0
+  tags:
+    - bgp_timers_policy
+    - aci_bgp_timers_policy

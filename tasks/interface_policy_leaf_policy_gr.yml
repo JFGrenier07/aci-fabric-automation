@@ -1,0 +1,64 @@
+---
+# Tâches pour gérer les Leaf Policy Groups avec read_csv
+- name: "Read CSV Leaf Policy Groups"
+  read_csv:
+    path: "{{ csv_dir }}/interface_policy_leaf_policy_gr.csv"
+    delimiter: ','
+  register: leaf_policy_gr_csv
+  when: (csv_dir + '/interface_policy_leaf_policy_gr.csv') is file
+
+- name: "Afficher les Leaf Policy Groups détectés"
+  debug:
+    msg: "Leaf Policy Groups à traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
+  when: leaf_policy_gr_csv is defined and leaf_policy_gr_csv.list is defined
+
+- name: "{{ item.policy_group }} - Créer Leaf Policy Group ({{ item.lag_type }})"
+  cisco.aci.aci_interface_policy_leaf_policy_group:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    
+    # Paramètres obligatoires
+    policy_group: "{{ item.policy_group }}"
+    lag_type: "{{ item.lag_type }}"
+    
+    # Description
+    description: "{{ item.description | default('') }}"
+    
+    # Policies d'interface optionnelles
+    link_level_policy: "{{ item.link_level_policy | default(omit) }}"
+    cdp_policy: "{{ item.cdp_policy | default(omit) }}"
+    lldp_policy: "{{ item.lldp_policy | default(omit) }}"
+    mcp_policy: "{{ item.mcp_policy | default(omit) }}"
+    stp_interface_policy: "{{ item.stp_interface_policy | default(omit) }}"
+    port_channel_policy: "{{ item.port_channel_policy if (item.lag_type in ['link', 'node'] and item.port_channel_policy) else omit }}"
+    
+    # Policies avancées optionnelles
+    monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
+    storm_control_interface_policy: "{{ item.storm_control_interface_policy | default(omit) }}"
+    l2_interface_policy: "{{ item.l2_interface_policy | default(omit) }}"
+    port_security_policy: "{{ item.port_security_policy | default(omit) }}"
+    link_flap_policy: "{{ item.link_flap_policy | default(omit) }}"
+    fibre_channel_interface_policy: "{{ item.fibre_channel_interface_policy | default(omit) }}"
+    slow_drain_policy: "{{ item.slow_drain_policy | default(omit) }}"
+    priority_flow_control_policy: "{{ item.priority_flow_control_policy | default(omit) }}"
+    egress_data_plane_policing_policy: "{{ item.egress_data_plane_policing_policy | default(omit) }}"
+    ingress_data_plane_policing_policy: "{{ item.ingress_data_plane_policing_policy | default(omit) }}"
+    
+    # État global
+    state: "{{ item.state | default(global_state) }}"
+    
+  loop: "{{ leaf_policy_gr_csv.list }}"
+  when:
+    - leaf_policy_gr_csv is defined
+    - leaf_policy_gr_csv.list is defined
+    - item.policy_group is defined
+    - item.policy_group | length > 0
+  tags:
+    - aci_interface_policy_leaf_policy_group
+    - leaf_policy_groups
+    - interface_policies
+    - policy_groups

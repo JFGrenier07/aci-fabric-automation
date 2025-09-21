@@ -1,0 +1,46 @@
+---
+# Tâche pour gérer les L3Out Logical Interface VPC Members
+- name: "Read CSV l3out_logical_interface_vpc_mem"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_logical_interface_vpc_mem.csv"
+    delimiter: ','
+  register: l3out_logical_interface_vpc_mem_csv
+  when: (csv_dir + '/l3out_logical_interface_vpc_mem.csv') is file
+
+- name: "Afficher les L3Out Logical Interface VPC Members détectés"
+  debug:
+    msg: "L3Out Logical Interface VPC Members à traiter: {{ l3out_logical_interface_vpc_mem_csv.list | length | default(0) }}"
+  when: l3out_logical_interface_vpc_mem_csv is defined
+
+- name: "{{ item.path_ep }} - Créer L3Out Logical Interface VPC Member"
+  cisco.aci.aci_l3out_logical_interface_vpc_member:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    node_profile: "{{ item.node_profile }}"
+    interface_profile: "{{ item.interface_profile }}"
+    pod_id: "{{ item.pod_id }}"
+    node_id: "{{ item.node_id }}"
+    path_ep: "{{ item.path_ep }}"
+    description: "{{ item.description | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_logical_interface_vpc_mem_csv.list }}"
+  when:
+    - l3out_logical_interface_vpc_mem_csv is defined
+    - l3out_logical_interface_vpc_mem_csv.list is defined
+    - l3out_logical_interface_vpc_mem_csv.list | length > 0
+    - item.path_ep is defined
+    - item.path_ep | length > 0
+  tags:
+    - l3out_logical_interface_vpc_mem
+    - aci_l3out_logical_interface_vpc_member
+
+- name: " Résumé L3Out Logical Interface VPC Members"
+  debug:
+    msg: " {{ l3out_logical_interface_vpc_mem_csv.list | length }} L3Out Logical Interface VPC Members créés"
+  when: l3out_logical_interface_vpc_mem_csv is defined and l3out_logical_interface_vpc_mem_csv.list | length > 0

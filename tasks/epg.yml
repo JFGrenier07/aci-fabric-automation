@@ -1,0 +1,47 @@
+---
+# Tâches pour gérer les Endpoint Groups avec read_csv
+- name: "Read CSV Endpoint Groups"
+  read_csv:
+    path: "{{ csv_dir }}/epg.csv"
+    delimiter: ','
+  register: epg_csv
+  when: (csv_dir + '/epg.csv') is file
+
+- name: "Afficher les Endpoint Groups détectés"
+  debug:
+    msg: "Endpoint Groups à traiter: {{ epg_csv.list | map(attribute='epg') | list }}"
+  when: epg_csv is defined and epg_csv.list is defined
+
+- name: "{{ item.epg }} - Créer Endpoint Group ACI"
+  cisco.aci.aci_epg:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    ap: "{{ item.ap }}"
+    epg: "{{ item.epg }}"
+    bd: "{{ item.bd }}"
+    description: "{{ item.description | default(omit) }}"
+    priority: "{{ item.priority | default('unspecified') }}"
+    intra_epg_isolation: "{{ item.intra_epg_isolation | default('unenforced') }}"
+    fwd_control: "{{ item.fwd_control | default('none') }}"
+    preferred_group: "{{ item.preferred_group | default(false) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ epg_csv.list }}"
+  when: 
+    - epg_csv is defined
+    - epg_csv.list is defined
+    - item.epg is defined
+    - item.epg | length > 0
+    - item.tenant is defined
+    - item.tenant | length > 0
+    - item.ap is defined
+    - item.ap | length > 0
+    - item.bd is defined
+    - item.bd | length > 0
+  tags:
+    - endpoint_groups
+    - aci_epg

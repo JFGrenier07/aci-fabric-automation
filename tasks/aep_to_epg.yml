@@ -1,0 +1,38 @@
+---
+- name: "Read CSV aep_to_epg"
+  read_csv:
+    path: "{{ csv_dir }}/aep_to_epg.csv"
+    delimiter: ','
+  register: aep_to_epg_csv
+  when: (csv_dir + '/aep_to_epg.csv') is file
+
+- name: "Afficher les AEP to EPG détectés"
+  debug:
+    msg: "AEP to EPG à traiter: {{ aep_to_epg_csv.list | map(attribute='aep') | list }}"
+  when: aep_to_epg_csv is defined and aep_to_epg_csv.list is defined
+
+- name: "{{ item.aep }} - Associer AEP aux EPG"
+  cisco.aci.aci_aep_to_epg:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    aep: "{{ item.aep }}"
+    tenant: "{{ item.tenant }}"
+    ap: "{{ item.ap }}"
+    epg: "{{ item.epg }}"
+    encap: "{{ item.encap | default(omit) }}"
+    primary_encap: "{{ item.primary_encap_id | default(omit) }}"
+    interface_mode: "{{ item.interface_mode | default('trunk') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ aep_to_epg_csv.list }}"
+  when:
+    - aep_to_epg_csv is defined
+    - aep_to_epg_csv.list is defined
+    - item.aep is defined
+    - item.aep | length > 0
+  tags:
+    - aep_to_epg
+    - aci_aep_to_epg

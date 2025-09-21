@@ -1,0 +1,43 @@
+---
+# Tâche pour gérer les Switch Policy VPC Protection Groups
+- name: "Read CSV switch_policy_vpc_protection_gr"
+  read_csv:
+    path: "{{ csv_dir }}/switch_policy_vpc_protection_gr.csv"
+    delimiter: ','
+  register: switch_policy_vpc_protection_gr_csv
+  when: (csv_dir + '/switch_policy_vpc_protection_gr.csv') is file
+
+- name: "Afficher les VPC Protection Groups détectés"
+  debug:
+    msg: "VPC Protection Groups à traiter: {{ switch_policy_vpc_protection_gr_csv.list | map(attribute='protection_group') | list }}"
+  when: switch_policy_vpc_protection_gr_csv is defined and switch_policy_vpc_protection_gr_csv.list is defined
+
+- name: "{{ item.protection_group }} - Créer VPC Protection Group"
+  cisco.aci.aci_switch_policy_vpc_protection_group:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    protection_group: "{{ item.protection_group }}"
+    protection_group_id: "{{ item.protection_group_id }}"
+    switch_1_id: "{{ item.switch_1_id }}"
+    switch_2_id: "{{ item.switch_2_id }}"
+    vpc_domain_policy: "{{ item.vpc_domain_policy | default('default') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ switch_policy_vpc_protection_gr_csv.list }}"
+  when:
+    - switch_policy_vpc_protection_gr_csv is defined
+    - switch_policy_vpc_protection_gr_csv.list is defined
+    - switch_policy_vpc_protection_gr_csv.list | length > 0
+    - item.protection_group is defined
+    - item.protection_group | length > 0
+  tags:
+    - switch_policy_vpc_protection_gr
+    - aci_switch_policy_vpc_protection_group
+
+- name: "✅ Résumé VPC Protection Groups"
+  debug:
+    msg: "✅ {{ switch_policy_vpc_protection_gr_csv.list | length }} VPC Protection Groups créés"
+  when: switch_policy_vpc_protection_gr_csv is defined and switch_policy_vpc_protection_gr_csv.list | length > 0

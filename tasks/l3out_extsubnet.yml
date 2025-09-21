@@ -1,0 +1,41 @@
+---
+# Tâche pour gérer les External Subnets L3Out
+- name: "Read CSV l3out_extsubnet"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_extsubnet.csv"
+    delimiter: ','
+  register: l3out_extsubnet_csv
+  when: (csv_dir + '/l3out_extsubnet.csv') is file
+
+- name: "Afficher les L3Out ExtSubnet détectés"
+  debug:
+    msg: "L3Out ExtSubnet à traiter: {{ l3out_extsubnet_csv.list | map(attribute='network') | list }}"
+  when: l3out_extsubnet_csv is defined and l3out_extsubnet_csv.list is defined
+
+- name: "{{ item.network }} - Créer External Subnet L3Out {{ item.network }} (l3ext:Subnet)"
+  cisco.aci.aci_l3out_extsubnet:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    extepg: "{{ item.extepg }}"
+    network: "{{ item.network }}"
+    subnet_name: "{{ item.subnet_name | default(omit) }}"
+    description: "{{ item.description | default(omit) }}"
+    scope: "{{ item.scope | default(['import-security']) }}"
+    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_extsubnet_csv.list }}"
+  when:
+    - l3out_extsubnet_csv is defined
+    - l3out_extsubnet_csv.list is defined
+    - item.network is defined
+    - item.network | length > 0
+  tags:
+    - l3out_extsubnet
+    - aci_l3out_extsubnet
+    - external_subnets

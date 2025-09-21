@@ -1,0 +1,43 @@
+---
+# Tâches pour gérer les policies Port Channel avec read_csv
+- name: "Read CSV Port Channel Policies"
+  read_csv:
+    path: "{{ csv_dir }}/interface_policy_port_channel.csv"
+    delimiter: ','
+  register: port_channel_policy_csv
+  when: (csv_dir + '/interface_policy_port_channel.csv') is file
+
+- name: "Afficher les policies Port Channel détectées"
+  debug:
+    msg: "Policies Port Channel à traiter: {{ port_channel_policy_csv.list | map(attribute='port_channel') | list }}"
+  when: port_channel_policy_csv is defined and port_channel_policy_csv.list is defined
+
+- name: "{{ item.port_channel }} - Manage port channel interface policies (lacp:LagPol)"
+  cisco.aci.aci_interface_policy_port_channel:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    port_channel: "{{ item.port_channel }}"
+    mode: "{{ item.mode | default('off') }}"
+    min_links: "{{ item.min_links | default('1') }}"
+    max_links: "{{ item.max_links | default('16') }}"
+    fast_select: "{{ item.fast_select | default('true') }}"
+    graceful_convergence: "{{ item.graceful_convergence | default('true') }}"
+    load_defer: "{{ item.load_defer | default('false') }}"
+    suspend_individual: "{{ item.suspend_individual | default('true') }}"
+    symmetric_hash: "{{ item.symmetric_hash | default('false') }}"
+    description: "{{ item.description | default('') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ port_channel_policy_csv.list }}"
+  when:
+    - port_channel_policy_csv is defined
+    - port_channel_policy_csv.list is defined
+    - item.port_channel is defined
+    - item.port_channel | length > 0
+  tags:
+    - aci_interface_policy_port_channel
+    - interface_policies
+    - infrastructure

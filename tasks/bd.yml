@@ -1,0 +1,43 @@
+---
+# Tâches pour gérer les Bridge Domains avec read_csv
+- name: "Read CSV Bridge Domains"
+  read_csv:
+    path: "{{ csv_dir }}/bd.csv"
+    delimiter: ','
+  register: bd_csv
+  when: (csv_dir + '/bd.csv') is file
+
+- name: "Afficher les Bridge Domains détectés"
+  debug:
+    msg: "Bridge Domains à traiter: {{ bd_csv.list | map(attribute='bd') | list }}"
+  when: bd_csv is defined and bd_csv.list is defined
+
+- name: "{{ item.bd }} - Créer le Bridge Domain ACI"
+  cisco.aci.aci_bd:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    bd: "{{ item.bd }}"
+    vrf: "{{ item.vrf }}"
+    description: "{{ item.description | default(omit) }}"
+    enable_routing: "{{ item.enable_routing | default(true) }}"
+    arp_flooding: "{{ item.arp_flooding | default(false) }}"
+    l2_unknown_unicast: "{{ item.l2_unknown_unicast | default('proxy') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ bd_csv.list }}"
+  when: 
+    - bd_csv is defined
+    - bd_csv.list is defined
+    - item.bd is defined
+    - item.bd | length > 0
+    - item.tenant is defined
+    - item.tenant | length > 0
+    - item.vrf is defined
+    - item.vrf | length > 0
+  tags:
+    - bridge_domains
+    - aci_bd

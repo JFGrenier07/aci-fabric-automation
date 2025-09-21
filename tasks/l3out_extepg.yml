@@ -1,0 +1,44 @@
+---
+# Tâche pour gérer les External EPGs L3Out
+- name: "Read CSV l3out_extepg"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_extepg.csv"
+    delimiter: ','
+  register: l3out_extepg_csv
+  when: (csv_dir + '/l3out_extepg.csv') is file
+
+- name: "Afficher les L3Out ExtEPG détectés"
+  debug:
+    msg: "L3Out ExtEPG à traiter: {{ l3out_extepg_csv.list | map(attribute='extepg') | list }}"
+  when: l3out_extepg_csv is defined and l3out_extepg_csv.list is defined
+
+- name: "{{ item.extepg }} - Créer External EPG L3Out {{ item.extepg }} (l3ext:InstP)"
+  cisco.aci.aci_l3out_extepg:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    extepg: "{{ item.extepg }}"
+    description: "{{ item.description | default(omit) }}"
+    preferred_group: "{{ item.preferred_group | default(false) }}"
+    dscp: "{{ item.dscp | default('unspecified') }}"
+    contract_exception_tag: "{{ item.contract_exception_tag | default(omit) }}"
+    qos_class: "{{ item.qos_class | default('level3') }}"
+    intra_ext_epg_isolation: "{{ item.intra_ext_epg_isolation | default('unenforced') }}"
+    route_control_profiles: "{{ item.route_control_profiles | default(omit) }}"
+    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_extepg_csv.list }}"
+  when:
+    - l3out_extepg_csv is defined
+    - l3out_extepg_csv.list is defined
+    - item.extepg is defined
+    - item.extepg | length > 0
+  tags:
+    - l3out_extepg
+    - aci_l3out_extepg
+    - external_epg

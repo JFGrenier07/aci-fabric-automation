@@ -1,0 +1,39 @@
+---
+# Tâches pour gérer les policies Link Level avec read_csv
+- name: "Read CSV Link Level Policies"
+  read_csv:
+    path: "{{ csv_dir }}/interface_policy_link_level.csv"
+    delimiter: ','
+  register: link_level_policy_csv
+  when: (csv_dir + '/interface_policy_link_level.csv') is file
+
+- name: "Afficher les policies Link Level détectées"
+  debug:
+    msg: "Policies Link Level à traiter: {{ link_level_policy_csv.list | map(attribute='link_level_policy') | list }}"
+  when: link_level_policy_csv is defined and link_level_policy_csv.list is defined
+
+- name: "{{ item.link_level_policy }} - Manage Link Level interface policies (fabric:HIfPol)"
+  cisco.aci.aci_interface_policy_link_level:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    link_level_policy: "{{ item.link_level_policy }}"
+    auto_negotiation: "{{ item.auto_negotiation | default('true') }}"
+    speed: "{{ item.speed | default('inherit') }}"
+    link_debounce_interval: "{{ item.link_debounce_interval | default('100') }}"
+    forwarding_error_correction: "{{ item.forwarding_error_correction | default('inherit') }}"
+    description: "{{ item.description | default('') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ link_level_policy_csv.list }}"
+  when:
+    - link_level_policy_csv is defined
+    - link_level_policy_csv.list is defined
+    - item.link_level_policy is defined
+    - item.link_level_policy | length > 0
+  tags:
+    - aci_interface_policy_link_level
+    - interface_policies
+    - infrastructure

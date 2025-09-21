@@ -1,0 +1,39 @@
+---
+- name: "Read CSV contract_subject_to_filter"
+  read_csv:
+    path: "{{ csv_dir }}/contract_subject_to_filter.csv"
+    delimiter: ','
+  register: contract_subject_to_filter_csv
+  when: (csv_dir + '/contract_subject_to_filter.csv') is file
+
+- name: "Afficher les Contract Subject to Filter détectés"
+  debug:
+    msg: "Contract Subject to Filter à traiter: {{ contract_subject_to_filter_csv.list | map(attribute='subject') | list }}"
+  when: contract_subject_to_filter_csv is defined and contract_subject_to_filter_csv.list is defined
+
+- name: "{{ item.subject }} - Associer les Subjects aux Filters ACI"
+  cisco.aci.aci_contract_subject_to_filter:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    contract: "{{ item.contract }}"
+    subject: "{{ item.subject }}"
+    filter: "{{ item.filter }}"
+    action: "{{ item.action | default('permit') }}"
+    direction: "{{ item.direction | default('both') }}"
+    priority_override: "{{ item.priority_override | default('default') }}"
+    directives: "{{ item.directives | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ contract_subject_to_filter_csv.list }}"
+  when:
+    - contract_subject_to_filter_csv is defined
+    - contract_subject_to_filter_csv.list is defined
+    - item.subject is defined
+    - item.subject | length > 0
+  tags:
+    - subject_to_filter
+    - aci_contract_subject_to_filter

@@ -1,0 +1,43 @@
+---
+# Tâche pour lier des nœuds aux profils de nœuds L3Out
+- name: "Read CSV l3out_logical_node"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_logical_node.csv"
+    delimiter: ','
+  register: l3out_logical_node_csv
+  when: (csv_dir + '/l3out_logical_node.csv') is file
+
+- name: "Afficher les L3Out Logical Node détectés"
+  debug:
+    msg: "L3Out Logical Node à traiter: {{ l3out_logical_node_csv.list | map(attribute='node_id') | list }}"
+  when: l3out_logical_node_csv is defined and l3out_logical_node_csv.list is defined
+
+- name: "{{ item.node_id }} - Attacher le nœud {{ item.node_id }} au profil {{ item.node_profile }} (l3ext:RsNodeL3OutAtt)"
+  cisco.aci.aci_l3out_logical_node:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    node_profile: "{{ item.node_profile }}"
+    pod_id: "{{ item.pod_id | default(1) }}"
+    node_id: "{{ item.node_id }}"
+    router_id: "{{ item.router_id | default(omit) }}"
+    router_id_as_loopback: "{{ item.router_id_as_loopback | default('yes') }}"
+    loopback_address: "{{ item.loopback_address | default(omit) }}"
+    mpls_transport_loopback_address: "{{ item.mpls_transport_loopback_address | default(omit) }}"
+    sid: "{{ item.sid | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_logical_node_csv.list }}"
+  when:
+    - l3out_logical_node_csv is defined
+    - l3out_logical_node_csv.list is defined
+    - item.node_id is defined
+    - item.node_id | length > 0
+  tags:
+    - l3out_logical_node
+    - aci_l3out_logical_node
+    - l3out_nodes

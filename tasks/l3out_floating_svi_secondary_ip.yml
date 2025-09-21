@@ -1,0 +1,47 @@
+---
+# Tâche pour gérer les L3Out Floating SVI Secondary IPs
+- name: "Read CSV l3out_floating_svi_secondary_ip"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_floating_svi_secondary_ip.csv"
+    delimiter: ','
+  register: l3out_floating_svi_secondary_ip_csv
+  when: (csv_dir + '/l3out_floating_svi_secondary_ip.csv') is file
+
+- name: "Afficher les L3Out Floating SVI Secondary IPs détectés"
+  debug:
+    msg: "L3Out Floating SVI Secondary IPs à traiter: {{ l3out_floating_svi_secondary_ip_csv.list | length | default(0) }}"
+  when: l3out_floating_svi_secondary_ip_csv is defined
+
+- name: "{{ item.secondary_ip }} - Créer L3Out Floating SVI Secondary IP"
+  cisco.aci.aci_l3out_floating_svi_secondary_ip:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    node_profile: "{{ item.node_profile }}"
+    interface_profile: "{{ item.interface_profile }}"
+    pod_id: "{{ item.pod_id }}"
+    node_id: "{{ item.node_id }}"
+    secondary_ip: "{{ item.secondary_ip }}"
+    encap: "{{ item.encap | default(omit) }}"
+    description: "{{ item.description | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_floating_svi_secondary_ip_csv.list }}"
+  when:
+    - l3out_floating_svi_secondary_ip_csv is defined
+    - l3out_floating_svi_secondary_ip_csv.list is defined
+    - l3out_floating_svi_secondary_ip_csv.list | length > 0
+    - item.secondary_ip is defined
+    - item.secondary_ip | length > 0
+  tags:
+    - l3out_floating_svi_secondary_ip
+    - aci_l3out_floating_svi_secondary_ip
+
+- name: " Résumé L3Out Floating SVI Secondary IPs"
+  debug:
+    msg: " {{ l3out_floating_svi_secondary_ip_csv.list | length }} L3Out Floating SVI Secondary IPs créés"
+  when: l3out_floating_svi_secondary_ip_csv is defined and l3out_floating_svi_secondary_ip_csv.list | length > 0

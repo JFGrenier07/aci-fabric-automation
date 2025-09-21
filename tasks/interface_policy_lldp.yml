@@ -1,0 +1,37 @@
+---
+# Tâches pour gérer les policies LLDP avec read_csv
+- name: "Read CSV LLDP Policies"
+  read_csv:
+    path: "{{ csv_dir }}/interface_policy_lldp.csv"
+    delimiter: ','
+  register: lldp_policy_csv
+  when: (csv_dir + '/interface_policy_lldp.csv') is file
+
+- name: "Afficher les policies LLDP détectées"
+  debug:
+    msg: "Policies LLDP à traiter: {{ lldp_policy_csv.list | map(attribute='lldp_policy ') | list }}"
+  when: lldp_policy_csv is defined and lldp_policy_csv.list is defined
+
+- name: "{{ item['lldp_policy '] }} - Manage LLDP interface policies (lldp:IfPol)"
+  cisco.aci.aci_interface_policy_lldp:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    lldp_policy: "{{ item['lldp_policy '] }}"
+    receive_state: "{{ item.receive_state | default('present') }}"
+    transmit_state: "{{ item.transmit_state | default('present') }}"
+    description: "{{ item.description | default('') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ lldp_policy_csv.list }}"
+  when:
+    - lldp_policy_csv is defined
+    - lldp_policy_csv.list is defined
+    - item['lldp_policy '] is defined
+    - item['lldp_policy '] | length > 0
+  tags:
+    - aci_interface_policy_lldp
+    - interface_policies
+    - infrastructure

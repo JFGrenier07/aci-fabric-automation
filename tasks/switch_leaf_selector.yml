@@ -1,0 +1,40 @@
+---
+# Tâches pour gérer les switch leaf selectors avec read_csv
+- name: "Read CSV Switch Leaf Selectors"
+  read_csv:
+    path: "{{ csv_dir }}/switch_leaf_selector.csv"
+    delimiter: ','
+  register: switch_leaf_selector_csv
+  when: (csv_dir + '/switch_leaf_selector.csv') is file
+
+- name: "Afficher les Switch Leaf Selectors détectés"
+  debug:
+    msg: "Switch Leaf Selectors à traiter: {{ switch_leaf_selector_csv.list | map(attribute='leaf') | list }}"
+  when: switch_leaf_selector_csv is defined and switch_leaf_selector_csv.list is defined
+
+- name: "{{ item.leaf }} - Créer le Switch Leaf Selector"
+  cisco.aci.aci_switch_leaf_selector:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    leaf_profile: "{{ item.leaf_profile }}"
+    leaf: "{{ item.leaf }}"
+    leaf_node_blk: "{{ item.leaf_node_blk | default(omit) }}"
+    from: "{{ item.from }}"
+    to: "{{ item.to }}"
+    description: "{{ item.description | default('') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ switch_leaf_selector_csv.list }}"
+  when:
+    - switch_leaf_selector_csv is defined
+    - switch_leaf_selector_csv.list is defined
+    - item.leaf_profile is defined
+    - item.leaf is defined
+    - item.from is defined
+    - item.to is defined
+  tags:
+    - switch_leaf_selector
+    - aci_switch_leaf_selector

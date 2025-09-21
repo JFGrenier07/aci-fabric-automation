@@ -1,0 +1,43 @@
+---
+# Tâche pour gérer les associations Bridge Domain to L3Out
+- name: "Read CSV bd_to_l3out"
+  read_csv:
+    path: "{{ csv_dir }}/bd_to_l3out.csv"
+    delimiter: ','
+  register: bd_to_l3out_csv
+  when: (csv_dir + '/bd_to_l3out.csv') is file
+
+- name: "Afficher les associations BD to L3Out détectés"
+  debug:
+    msg: "BD to L3Out à traiter: {{ bd_to_l3out_csv.list | length | default(0) }}"
+  when: bd_to_l3out_csv is defined
+
+- name: "{{ item.bridge_domain }} → {{ item.l3out }} - Créer association BD to L3Out"
+  cisco.aci.aci_bd_to_l3out:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    bd: "{{ item.bridge_domain }}"
+    l3out: "{{ item.l3out }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ bd_to_l3out_csv.list }}"
+  when:
+    - bd_to_l3out_csv is defined
+    - bd_to_l3out_csv.list is defined
+    - bd_to_l3out_csv.list | length > 0
+    - item.bridge_domain is defined
+    - item.bridge_domain | length > 0
+    - item.l3out is defined
+    - item.l3out | length > 0
+  tags:
+    - bd_to_l3out
+    - aci_bd_to_l3out
+
+- name: "✅ Résumé BD to L3Out"
+  debug:
+    msg: "✅ {{ bd_to_l3out_csv.list | length }} associations BD to L3Out créées"
+  when: bd_to_l3out_csv is defined and bd_to_l3out_csv.list | length > 0

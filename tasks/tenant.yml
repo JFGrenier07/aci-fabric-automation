@@ -1,0 +1,34 @@
+---
+# Tâches pour gérer les tenants avec read_csv
+- name: "Read CSV tenants"
+  read_csv:
+    path: "{{ csv_dir }}/tenant.csv"
+    delimiter: ','
+  register: tenant_csv
+  when: (csv_dir + '/tenant.csv') is file
+
+- name: "Afficher les tenants détectés"
+  debug:
+    msg: "Tenants à traiter: {{ tenant_csv.list | map(attribute='tenant') | list }}"
+  when: tenant_csv is defined and tenant_csv.list is defined
+
+- name: "{{ item.tenant }} - Créer le tenant ACI"
+  cisco.aci.aci_tenant:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    description: "{{ item.description | default(omit) }}"
+    annotation: ""
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ tenant_csv.list }}"
+  when: 
+    - tenant_csv is defined
+    - tenant_csv.list is defined
+    - item.tenant is defined
+    - item.tenant | length > 0
+  tags:
+    - tenants
+    - aci_tenant

@@ -1,0 +1,40 @@
+---
+# Tâches pour gérer les Contracts avec read_csv
+- name: "Read CSV Contracts"
+  read_csv:
+    path: "{{ csv_dir }}/contract.csv"
+    delimiter: ','
+  register: contract_csv
+  when: (csv_dir + '/contract.csv') is file
+
+- name: "Afficher les Contracts détectés"
+  debug:
+    msg: "Contracts à traiter: {{ contract_csv.list | map(attribute='contract') | list }}"
+  when: contract_csv is defined and contract_csv.list is defined
+
+- name: "{{ item.contract }} - Créer Contract ACI"
+  cisco.aci.aci_contract:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    contract: "{{ item.contract }}"
+    description: "{{ item.description | default(omit) }}"
+    scope: "{{ item.scope | default('context') }}"
+    priority: "{{ item.priority | default('unspecified') }}"
+    dscp: "{{ item.dscp | default('unspecified') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ contract_csv.list }}"
+  when: 
+    - contract_csv is defined
+    - contract_csv.list is defined
+    - item.contract is defined
+    - item.contract | length > 0
+    - item.tenant is defined
+    - item.tenant | length > 0
+  tags:
+    - contracts
+    - aci_contract

@@ -1,0 +1,37 @@
+---
+# Tâches pour gérer les Filters avec read_csv
+- name: "Read CSV Filters"
+  read_csv:
+    path: "{{ csv_dir }}/filter.csv"
+    delimiter: ','
+  register: filter_csv
+  when: (csv_dir + '/filter.csv') is file
+
+- name: "Afficher les Filters détectés"
+  debug:
+    msg: "Filters à traiter: {{ filter_csv.list | map(attribute='filter') | list }}"
+  when: filter_csv is defined and filter_csv.list is defined
+
+- name: "{{ item.filter }} - Créer Filter ACI"
+  cisco.aci.aci_filter:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    filter: "{{ item.filter }}"
+    description: "{{ item.description | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ filter_csv.list }}"
+  when: 
+    - filter_csv is defined
+    - filter_csv.list is defined
+    - item.filter is defined
+    - item.filter | length > 0
+    - item.tenant is defined
+    - item.tenant | length > 0
+  tags:
+    - filters
+    - aci_filter

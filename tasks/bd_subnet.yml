@@ -1,0 +1,44 @@
+---
+# Tâches pour gérer les BD Subnets avec read_csv
+- name: "Read CSV BD Subnets"
+  read_csv:
+    path: "{{ csv_dir }}/bd_subnet.csv"
+    delimiter: ','
+  register: bd_subnet_csv
+  when: (csv_dir + '/bd_subnet.csv') is file
+
+- name: "Afficher les BD Subnets détectés"
+  debug:
+    msg: "BD Subnets à traiter: {{ bd_subnet_csv.list | map(attribute='gateway') | list }}"
+  when: bd_subnet_csv is defined and bd_subnet_csv.list is defined
+
+- name: "{{ item.gateway }} - Créer BD Subnet ACI"
+  cisco.aci.aci_bd_subnet:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    bd: "{{ item.bd }}"
+    gateway: "{{ item.gateway }}"
+    mask: "{{ item.mask | default(24) }}"
+    subnet_name: "{{ item.subnet_name | default(omit) }}"
+    description: "{{ item.description | default(omit) }}"
+    scope: "{{ item.scope | default(['private']) }}"
+    ip_data_plane_learning: "{{ item.ip_data_plane_learning | default('enabled') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ bd_subnet_csv.list }}"
+  when: 
+    - bd_subnet_csv is defined
+    - bd_subnet_csv.list is defined
+    - item.tenant is defined
+    - item.tenant | length > 0
+    - item.bd is defined
+    - item.bd | length > 0
+    - item.gateway is defined
+    - item.gateway | length > 0
+  tags:
+    - bd_subnets
+    - aci_bd_subnet

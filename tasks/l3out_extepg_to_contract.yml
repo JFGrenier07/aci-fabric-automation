@@ -1,0 +1,45 @@
+---
+# Tâche pour gérer les associations L3Out External EPG to Contract
+- name: "Read CSV l3out_extepg_to_contract"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_extepg_to_contract.csv"
+    delimiter: ','
+  register: l3out_extepg_to_contract_csv
+  when: (csv_dir + '/l3out_extepg_to_contract.csv') is file
+
+- name: "Afficher les associations L3Out ExtEPG to Contract détectés"
+  debug:
+    msg: "L3Out ExtEPG to Contract à traiter: {{ l3out_extepg_to_contract_csv.list | length | default(0) }}"
+  when: l3out_extepg_to_contract_csv is defined
+
+- name: "{{ item.extepg }} ’ {{ item.contract }} - Créer association L3Out ExtEPG to Contract"
+  cisco.aci.aci_l3out_extepg_to_contract:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    extepg: "{{ item.extepg }}"
+    contract: "{{ item.contract }}"
+    contract_type: "{{ item.contract_type | default('provider') }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_extepg_to_contract_csv.list }}"
+  when:
+    - l3out_extepg_to_contract_csv is defined
+    - l3out_extepg_to_contract_csv.list is defined
+    - l3out_extepg_to_contract_csv.list | length > 0
+    - item.extepg is defined
+    - item.extepg | length > 0
+    - item.contract is defined
+    - item.contract | length > 0
+  tags:
+    - l3out_extepg_to_contract
+    - aci_l3out_extepg_to_contract
+
+- name: " Résumé L3Out ExtEPG to Contract"
+  debug:
+    msg: " {{ l3out_extepg_to_contract_csv.list | length }} associations L3Out ExtEPG to Contract créées"
+  when: l3out_extepg_to_contract_csv is defined and l3out_extepg_to_contract_csv.list | length > 0

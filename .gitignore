@@ -1,0 +1,125 @@
+# ACI Fabric Automation Engine - Git Ignore Rules
+
+# Environment and credentials
+.env
+.env.local
+.env.production
+*.pem
+*.key
+vault_pass.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/*.log
+*.log
+ansible.log
+
+# Generated files
+csv/*.csv
+!csv/.gitkeep
+detected_modules_csv.yml
+*_fabric_config.yml
+*.retry
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Backup files
+*.bak
+*.backup
+*_backup_*
+*.xlsx#
+.~lock.*
+
+# Ansible specific
+.vault_pass
+host_vars/
+group_vars/
+*.retry
+.ansible/
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Documentation build
+docs/_build/
+site/
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+
+# pytest
+.pytest_cache/
+.cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

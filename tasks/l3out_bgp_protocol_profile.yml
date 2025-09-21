@@ -1,0 +1,39 @@
+---
+# Tâche pour gérer les profils de protocole BGP L3Out
+- name: "Read CSV l3out_bgp_protocol_profile"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_bgp_protocol_profile.csv"
+    delimiter: ','
+  register: l3out_bgp_protocol_profile_csv
+  when: (csv_dir + '/l3out_bgp_protocol_profile.csv') is file
+
+- name: "Afficher les L3Out BGP Protocol Profile détectés"
+  debug:
+    msg: "L3Out BGP Protocol Profile à traiter: {{ l3out_bgp_protocol_profile_csv.list | map(attribute='node_profile') | list }}"
+  when: l3out_bgp_protocol_profile_csv is defined and l3out_bgp_protocol_profile_csv.list is defined
+
+- name: "{{ item.node_profile }} - Créer profil protocole BGP L3Out (bgp:ProtP)"
+  cisco.aci.aci_l3out_bgp_protocol_profile:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    node_profile: "{{ item.node_profile }}"
+    bgp_timers_policy: "{{ item.bgp_timers_policy | default(omit) }}"
+    bgp_best_path_policy: "{{ item.bgp_best_path_policy | default(omit) }}"
+    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_bgp_protocol_profile_csv.list }}"
+  when:
+    - l3out_bgp_protocol_profile_csv is defined
+    - l3out_bgp_protocol_profile_csv.list is defined
+    - item.node_profile is defined
+    - item.node_profile | length > 0
+  tags:
+    - l3out_bgp_protocol_profile
+    - aci_l3out_bgp_protocol_profile
+    - bgp_protocol

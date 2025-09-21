@@ -1,0 +1,53 @@
+---
+# Tâches pour gérer les configurations d'interface avec read_csv
+- name: "Read CSV Interface Configurations"
+  read_csv:
+    path: "{{ csv_dir }}/interface_config.csv"
+    delimiter: ','
+  register: interface_config_csv
+  when: (csv_dir + '/interface_config.csv') is file
+
+- name: "Afficher les configurations d'interface détectées"
+  debug:
+    msg: "Configurations d'interface à traiter: {{ interface_config_csv.list | map(attribute='interface') | list }}"
+  when: interface_config_csv is defined and interface_config_csv.list is defined
+
+- name: "{{ item.node }}/{{ item.interface }} - Configurer interface {{ item.interface }} sur switch {{ item.node }}"
+  cisco.aci.aci_interface_config:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    
+    # Paramètres obligatoires
+    node: "{{ item.node }}"
+    interface: "{{ item.interface }}"
+    
+    # Configuration de base
+    role: "{{ item.role | default('leaf') }}"
+    port_type: "{{ item.port_type | default('access') }}"
+    interface_type: "{{ item.interface_type | default('switch_port') }}"
+    admin_state: "{{ item.admin_state | default('up') }}"
+    
+    # Configuration optionnelle
+    policy_group: "{{ item.policy_group | default(omit) }}"
+    breakout: "{{ item.breakout | default(omit) }}"
+    pc_member: "{{ item.pc_member | default(omit) }}"
+    description: "{{ item.description | default('') }}"
+    
+    # État global
+    state: "{{ item.state | default(global_state) }}"
+    
+  loop: "{{ interface_config_csv.list }}"
+  when:
+    - interface_config_csv is defined
+    - interface_config_csv.list is defined
+    - item.node is defined
+    - item.interface is defined
+  tags:
+    - aci_interface_config
+    - interface_config
+    - interfaces
+    - physical_interfaces

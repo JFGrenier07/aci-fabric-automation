@@ -1,0 +1,46 @@
+---
+# Tâche pour gérer les profils d'interfaces logiques L3Out
+- name: "Read CSV l3out_logical_interface_profile"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_logical_interface_profile.csv"
+    delimiter: ','
+  register: l3out_logical_interface_profile_csv
+  when: (csv_dir + '/l3out_logical_interface_profile.csv') is file
+
+- name: "Afficher les L3Out Logical Interface Profile détectés"
+  debug:
+    msg: "L3Out Logical Interface Profile à traiter: {{ l3out_logical_interface_profile_csv.list | map(attribute='interface_profile') | list }}"
+  when: l3out_logical_interface_profile_csv is defined and l3out_logical_interface_profile_csv.list is defined
+
+- name: "{{ item.interface_profile }} - Créer le profil d'interface logique L3Out (l3ext:LIfP)"
+  cisco.aci.aci_l3out_logical_interface_profile:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    node_profile: "{{ item.node_profile }}"
+    interface_profile: "{{ item.interface_profile }}"
+    description: "{{ item.description | default(omit) }}"
+    nd_policy: "{{ item.nd_policy | default(omit) }}"
+    egress_dpp_policy: "{{ item.egress_dpp_policy | default(omit) }}"
+    ingress_dpp_policy: "{{ item.ingress_dpp_policy | default(omit) }}"
+    qos_priority: "{{ item.qos_priority | default('unspecified') }}"
+    qos_custom_policy: "{{ item.qos_custom_policy | default(omit) }}"
+    pim_v4_interface_profile: "{{ item.pim_v4_interface_profile | default(omit) }}"
+    pim_v6_interface_profile: "{{ item.pim_v6_interface_profile | default(omit) }}"
+    igmp_interface_profile: "{{ item.igmp_interface_profile | default(omit) }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_logical_interface_profile_csv.list }}"
+  when:
+    - l3out_logical_interface_profile_csv is defined
+    - l3out_logical_interface_profile_csv.list is defined
+    - item.interface_profile is defined
+    - item.interface_profile | length > 0
+  tags:
+    - l3out_logical_interface_profile
+    - aci_l3out_logical_interface_profile
+    - l3out_interfaces

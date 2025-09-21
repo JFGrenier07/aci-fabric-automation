@@ -1,0 +1,60 @@
+---
+# Tâche pour gérer les BGP Peers Floating L3Out via REST API
+- name: "Read CSV l3out_bgp_peer_floating"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_bgp_peer_floating.csv"
+    delimiter: ','
+  register: l3out_bgp_peer_floating_csv
+  when: (csv_dir + '/l3out_bgp_peer_floating.csv') is file
+
+- name: "Afficher les L3Out BGP Peer Floating détectés"
+  debug:
+    msg: "L3Out BGP Peer Floating à traiter: {{ l3out_bgp_peer_floating_csv.list | map(attribute='peer_ip') | list }}"
+  when: l3out_bgp_peer_floating_csv is defined and l3out_bgp_peer_floating_csv.list is defined
+
+- name: "{{ item.peer_ip }} - Créer BGP Peer Floating L3Out (via REST API)"
+  cisco.aci.aci_rest:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    method: post
+    path: "/api/node/mo/uni/tn-{{ item.tenant }}/out-{{ item.l3out }}/lnodep-{{ item.node_profile }}/lifp-{{ item.interface_profile }}/vlifp-[topology/pod-{{ item.pod_id }}/node-{{ item.node_id }}]-[vlan-{{ item.vlan }}].json"
+    content:
+      l3extVirtualLIfP:
+        attributes:
+          dn: "uni/tn-{{ item.tenant }}/out-{{ item.l3out }}/lnodep-{{ item.node_profile }}/lifp-{{ item.interface_profile }}/vlifp-[topology/pod-{{ item.pod_id }}/node-{{ item.node_id }}]-[vlan-{{ item.vlan }}]"
+        children:
+          - bgpPeerP:
+              attributes:
+                addr: "{{ item.peer_ip }}"
+                addrTCtrl: "{{ item.address_type_controls | default('af-ucast') }}"
+                adminSt: "{{ item.admin_state | default('enabled') }}"
+                ctrl: "{{ item.bgp_controls | default('send-com') }}"
+                peerCtrl: "{{ item.peer_controls | default('') }}"
+                ttl: "{{ item.ttl | default('1') }}"
+                weight: "{{ item.weight | default('0') }}"
+              children:
+                - bgpLocalAsnP:
+                    attributes:
+                      localAsn: "{{ item.local_as_number | default('0') }}"
+                      asnPropagate: "none"
+                - bgpAsP:
+                    attributes:
+                      asn: "{{ item.remote_asn }}"
+  loop: "{{ l3out_bgp_peer_floating_csv.list }}"
+  when:
+    - l3out_bgp_peer_floating_csv is defined
+    - l3out_bgp_peer_floating_csv.list is defined
+    - item.peer_ip is defined
+    - item.peer_ip | length > 0
+  tags:
+    - l3out_bgp_peer_floating
+    - aci_l3out_bgp_peer_floating
+
+- name: "✅ Résumé L3Out BGP Peer Floating"
+  debug:
+    msg: "✅ {{ l3out_bgp_peer_floating_csv.list | length }} L3Out BGP Peers Floating créés"
+  when: l3out_bgp_peer_floating_csv is defined
