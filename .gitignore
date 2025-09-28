@@ -60,6 +60,10 @@ detected_modules_csv.yml
 *_fabric_config.yml
 *.retry
 
+# Playbooks générés dynamiquement
+aci_*.yml
+!aci_fabric_config.yml
+
 # Temporary files
 *.tmp
 *.temp
@@ -72,6 +76,10 @@ detected_modules_csv.yml
 *_backup_*
 *.xlsx#
 .~lock.*
+
+# Scripts temporaires
+scripts/*.tmp
+scripts/*.log
 
 # Ansible specific
 .vault_pass
