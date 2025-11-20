@@ -31,7 +31,3 @@
     - stp_policy_csv.list is defined
     - item.stp_policy is defined
     - item.stp_policy | length > 0
-  tags:
-    - aci_interface_policy_spanning_tree
-    - interface_policies
-    - infrastructure

@@ -40,7 +40,3 @@
     - l3out_logical_interface_profile_csv.list is defined
     - item.interface_profile is defined
     - item.interface_profile | length > 0
-  tags:
-    - l3out_logical_interface_profile
-    - aci_l3out_logical_interface_profile
-    - l3out_interfaces

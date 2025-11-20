@@ -45,8 +45,3 @@
     - l3out_floating_svi_csv.list is defined
     - item.interface_profile is defined
     - item.interface_profile | length > 0
-  tags:
-    - aci_l3out_floating_svi
-    - l3out_floating_svi
-    - l3out
-    - infrastructure

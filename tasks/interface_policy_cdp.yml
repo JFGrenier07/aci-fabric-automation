@@ -30,7 +30,3 @@
     - cdp_policy_csv.list is defined
     - item.cdp_policy is defined
     - item.cdp_policy | length > 0
-  tags:
-    - aci_interface_policy_cdp
-    - interface_policies
-    - infrastructure

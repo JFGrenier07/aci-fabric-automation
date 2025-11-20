@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les L3Out BGP Peers
+# TÃ¢che pour gÃ©rer les L3Out BGP Peers
 - name: "Read CSV l3out_bgp_peer"
   read_csv:
     path: "{{ csv_dir }}/l3out_bgp_peer.csv"
@@ -7,12 +7,12 @@
   register: l3out_bgp_peer_csv
   when: (csv_dir + '/l3out_bgp_peer.csv') is file
 
-- name: "Afficher les L3Out BGP Peers détectés"
+- name: "Afficher les L3Out BGP Peers dÃ©tectÃ©s"
   debug:
-    msg: "L3Out BGP Peers à traiter: {{ l3out_bgp_peer_csv.list | map(attribute='peer_ip') | list }}"
+    msg: "L3Out BGP Peers Ã  traiter: {{ l3out_bgp_peer_csv.list | map(attribute='peer_ip') | list }}"
   when: l3out_bgp_peer_csv is defined and l3out_bgp_peer_csv.list is defined
 
-- name: "{{ item.peer_ip }} - Créer L3Out BGP Peer"
+- name: "{{ item.peer_ip }} - CrÃ©er L3Out BGP Peer"
   cisco.aci.aci_l3out_bgp_peer:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -43,11 +43,8 @@
     - l3out_bgp_peer_csv.list | length > 0
     - item.peer_ip is defined
     - item.peer_ip | length > 0
-  tags:
-    - l3out_bgp_peer
-    - aci_l3out_bgp_peer
 
-- name: "✅ Résumé L3Out BGP Peers"
+- name: "â RÃ©sumÃ© L3Out BGP Peers"
   debug:
-    msg: "✅ {{ l3out_bgp_peer_csv.list | length }} L3Out BGP Peers créés"
+    msg: "â {{ l3out_bgp_peer_csv.list | length }} L3Out BGP Peers crÃ©Ã©s"
   when: l3out_bgp_peer_csv is defined and l3out_bgp_peer_csv.list | length > 0

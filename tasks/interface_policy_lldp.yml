@@ -31,7 +31,3 @@
     - lldp_policy_csv.list is defined
     - item['lldp_policy '] is defined
     - item['lldp_policy '] | length > 0
-  tags:
-    - aci_interface_policy_lldp
-    - interface_policies
-    - infrastructure

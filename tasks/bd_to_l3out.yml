@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les associations Bridge Domain to L3Out
+# TÃÂ¢che pour gÃÂ©rer les associations Bridge Domain to L3Out
 - name: "Read CSV bd_to_l3out"
   read_csv:
     path: "{{ csv_dir }}/bd_to_l3out.csv"
@@ -7,12 +7,12 @@
   register: bd_to_l3out_csv
   when: (csv_dir + '/bd_to_l3out.csv') is file
 
-- name: "Afficher les associations BD to L3Out détectés"
+- name: "Afficher les associations BD to L3Out dÃÂ©tectÃÂ©s"
   debug:
-    msg: "BD to L3Out à traiter: {{ bd_to_l3out_csv.list | length | default(0) }}"
+    msg: "BD to L3Out ÃÂ  traiter: {{ bd_to_l3out_csv.list | length | default(0) }}"
   when: bd_to_l3out_csv is defined
 
-- name: "{{ item.bridge_domain }} → {{ item.l3out }} - Créer association BD to L3Out"
+- name: "{{ item.bridge_domain }} Ã¢Â {{ item.l3out }} - CrÃÂ©er association BD to L3Out"
   cisco.aci.aci_bd_to_l3out:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -33,11 +33,8 @@
     - item.bridge_domain | length > 0
     - item.l3out is defined
     - item.l3out | length > 0
-  tags:
-    - bd_to_l3out
-    - aci_bd_to_l3out
 
-- name: "✅ Résumé BD to L3Out"
+- name: "Ã¢ÂÂ RÃÂ©sumÃÂ© BD to L3Out"
   debug:
-    msg: "✅ {{ bd_to_l3out_csv.list | length }} associations BD to L3Out créées"
+    msg: "Ã¢ÂÂ {{ bd_to_l3out_csv.list | length }} associations BD to L3Out crÃÂ©ÃÂ©es"
   when: bd_to_l3out_csv is defined and bd_to_l3out_csv.list | length > 0

@@ -1,5 +1,5 @@
 ---
-# Tâche pour lier des nœuds aux profils de nœuds L3Out
+# TÃÂ¢che pour lier des nÃuds aux profils de nÃuds L3Out
 - name: "Read CSV l3out_logical_node"
   read_csv:
     path: "{{ csv_dir }}/l3out_logical_node.csv"
@@ -7,12 +7,12 @@
   register: l3out_logical_node_csv
   when: (csv_dir + '/l3out_logical_node.csv') is file
 
-- name: "Afficher les L3Out Logical Node détectés"
+- name: "Afficher les L3Out Logical Node dÃÂ©tectÃÂ©s"
   debug:
-    msg: "L3Out Logical Node à traiter: {{ l3out_logical_node_csv.list | map(attribute='node_id') | list }}"
+    msg: "L3Out Logical Node ÃÂ  traiter: {{ l3out_logical_node_csv.list | map(attribute='node_id') | list }}"
   when: l3out_logical_node_csv is defined and l3out_logical_node_csv.list is defined
 
-- name: "{{ item.node_id }} - Attacher le nœud {{ item.node_id }} au profil {{ item.node_profile }} (l3ext:RsNodeL3OutAtt)"
+- name: "{{ item.node_id }} - Attacher le nÃud {{ item.node_id }} au profil {{ item.node_profile }} (l3ext:RsNodeL3OutAtt)"
   cisco.aci.aci_l3out_logical_node:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -37,7 +37,3 @@
     - l3out_logical_node_csv.list is defined
     - item.node_id is defined
     - item.node_id | length > 0
-  tags:
-    - l3out_logical_node
-    - aci_l3out_logical_node
-    - l3out_nodes

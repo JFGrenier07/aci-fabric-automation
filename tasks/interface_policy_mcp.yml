@@ -30,7 +30,3 @@
     - mcp_policy_csv.list is defined
     - item.mcp is defined
     - item.mcp | length > 0
-  tags:
-    - aci_interface_policy_mcp
-    - interface_policies
-    - infrastructure

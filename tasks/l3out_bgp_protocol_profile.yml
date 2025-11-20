@@ -33,7 +33,3 @@
     - l3out_bgp_protocol_profile_csv.list is defined
     - item.node_profile is defined
     - item.node_profile | length > 0
-  tags:
-    - l3out_bgp_protocol_profile
-    - aci_l3out_bgp_protocol_profile
-    - bgp_protocol

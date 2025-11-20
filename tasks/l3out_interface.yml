@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les L3Out Interfaces
+# TÃ¢che pour gÃ©rer les L3Out Interfaces
 - name: "Read CSV l3out_interface"
   read_csv:
     path: "{{ csv_dir }}/l3out_interface.csv"
@@ -7,12 +7,12 @@
   register: l3out_interface_csv
   when: (csv_dir + '/l3out_interface.csv') is file
 
-- name: "Afficher les L3Out Interfaces détectés"
+- name: "Afficher les L3Out Interfaces dÃ©tectÃ©s"
   debug:
-    msg: "L3Out Interfaces à traiter: {{ l3out_interface_csv.list | map(attribute='path_ep') | list }}"
+    msg: "L3Out Interfaces Ã  traiter: {{ l3out_interface_csv.list | map(attribute='path_ep') | list }}"
   when: l3out_interface_csv is defined and l3out_interface_csv.list is defined
 
-- name: "{{ item.path_ep }} - Créer L3Out Interface"
+- name: "{{ item.path_ep }} - CrÃ©er L3Out Interface"
   cisco.aci.aci_l3out_interface:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -41,11 +41,8 @@
     - l3out_interface_csv.list | length > 0
     - item.path_ep is defined
     - item.path_ep | length > 0
-  tags:
-    - l3out_interface
-    - aci_l3out_interface
 
-- name: "✅ Résumé L3Out Interfaces"
+- name: "â RÃ©sumÃ© L3Out Interfaces"
   debug:
-    msg: "✅ {{ l3out_interface_csv.list | length }} L3Out Interfaces créés"
+    msg: "â {{ l3out_interface_csv.list | length }} L3Out Interfaces crÃ©Ã©s"
   when: l3out_interface_csv is defined and l3out_interface_csv.list | length > 0

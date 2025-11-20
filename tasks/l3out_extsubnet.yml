@@ -35,7 +35,3 @@
     - l3out_extsubnet_csv.list is defined
     - item.network is defined
     - item.network | length > 0
-  tags:
-    - l3out_extsubnet
-    - aci_l3out_extsubnet
-    - external_subnets

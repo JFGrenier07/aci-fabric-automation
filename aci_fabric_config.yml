@@ -1,0 +1,268 @@
+---
+- name: "Déploiement ACI depuis aci_fabric_config.xlsx"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    csv_dir: "csv"
+    # Variable globale pour contrôler l'état des objets ACI
+    global_state: "{{ deployment_state | default('present') }}"
+
+  pre_tasks:
+    - name: "🎯 Afficher l'action à effectuer"
+      debug:
+        msg: 
+          - "=== ACI AUTOMATION DYNAMIQUE - ACI_FABRIC_CONFIG ==="
+          - "📁 Répertoire CSV: {{ csv_dir }}/"
+          - "🌐 Fabric ACI: {{ aci_hostname }}"
+          - "⚡ Action: {% if global_state == 'present' %}DÉPLOIEMENT{% else %}SUPPRESSION{% endif %} des objets ACI"
+          - "📋 Modules détectés: 47"
+          - "=================================================="
+
+    - name: "Vérifier la présence du répertoire CSV"
+      stat:
+        path: "{{ csv_dir }}"
+      register: csv_dir_stat
+      failed_when: not csv_dir_stat.stat.exists or not csv_dir_stat.stat.isdir
+
+  tasks:
+    - name: "Inclure les tâches pour les VLAN Pools"
+      include_tasks: tasks/vlan_pool.yml
+      tags:
+        - vlan_pool
+        - aci_vlan_pool
+    - name: "Inclure les tâches pour les VLAN Encap Blocks (onglet séparé)"
+      include_tasks: tasks/vlan_pool_encap_block.yml
+      tags:
+        - vlan_pool_encap_block
+        - aci_vlan_pool_encap_block
+    - name: "Inclure les tâches pour les Physical Domains"
+      include_tasks: tasks/domain.yml
+      tags:
+        - domain
+        - aci_domain
+    - name: "Inclure les tâches pour les associations Domain-VLAN Pool (onglet séparé)"
+      include_tasks: tasks/domain_to_vlan_pool.yml
+      tags:
+        - domain_to_vlan_pool
+        - aci_domain_to_vlan_pool
+    - name: "Inclure les tâches pour les AEP (Attachable Entity Profiles)"
+      include_tasks: tasks/aep.yml
+      tags:
+        - aep
+        - aci_aep
+    - name: "Inclure les tâches pour les associations AEP-Domain (onglet séparé)"
+      include_tasks: tasks/aep_to_domain.yml
+      tags:
+        - aep_to_domain
+        - aci_aep_to_domain
+    - name: "Inclure les tâches pour les VPC Protection Groups"
+      include_tasks: tasks/switch_policy_vpc_protection_gr.yml
+      tags:
+        - switch_policy_vpc_protection_gr
+        - aci_switch_policy_vpc_protection_gr
+    - name: "Inclure les tâches pour les policies CDP"
+      include_tasks: tasks/interface_policy_cdp.yml
+      tags:
+        - interface_policy_cdp
+        - aci_interface_policy_cdp
+    - name: "Inclure les tâches pour les policies Link Level"
+      include_tasks: tasks/interface_policy_link_level.yml
+      tags:
+        - interface_policy_link_level
+        - aci_interface_policy_link_level
+    - name: "Inclure les tâches pour les policies LLDP"
+      include_tasks: tasks/interface_policy_lldp.yml
+      tags:
+        - interface_policy_lldp
+        - aci_interface_policy_lldp
+    - name: "Inclure les tâches pour les policies MCP"
+      include_tasks: tasks/interface_policy_mcp.yml
+      tags:
+        - interface_policy_mcp
+        - aci_interface_policy_mcp
+    - name: "Inclure les tâches pour les policies Port Channel"
+      include_tasks: tasks/interface_policy_port_channel.yml
+      tags:
+        - interface_policy_port_channel
+        - aci_interface_policy_port_channel
+    - name: "Inclure les tâches pour les policies Spanning Tree"
+      include_tasks: tasks/interface_policy_spanning_tree.yml
+      tags:
+        - interface_policy_spanning_tree
+        - aci_interface_policy_spanning_tree
+    - name: "Inclure les tâches pour les Interface Configurations"
+      include_tasks: tasks/interface_config.yml
+      tags:
+        - interface_config
+        - aci_interface_config
+    - name: "Inclure les tâches pour les Leaf Policy Groups"
+      include_tasks: tasks/interface_policy_leaf_policy_gr.yml
+      tags:
+        - interface_policy_leaf_policy_gr
+        - aci_interface_policy_leaf_policy_gr
+    - name: "Inclure les tâches pour les Switch Policy Leaf Profiles"
+      include_tasks: tasks/switch_policy_leaf_profile.yml
+      tags:
+        - switch_policy_leaf_profile
+        - aci_switch_policy_leaf_profile
+    - name: "Inclure les tâches pour les Interface Policy Leaf Profiles"
+      include_tasks: tasks/interface_policy_leaf_profile.yml
+      tags:
+        - interface_policy_leaf_profile
+        - aci_interface_policy_leaf_profile
+    - name: "Inclure les tâches pour les Switch Leaf Selectors"
+      include_tasks: tasks/switch_leaf_selector.yml
+      tags:
+        - switch_leaf_selector
+        - aci_switch_leaf_selector
+    - name: "Inclure les tâches pour les Interface to Switch Policy Associations"
+      include_tasks: tasks/int_sel_to_switch_policy_leaf.yml
+      tags:
+        - int_sel_to_switch_policy_leaf
+        - aci_int_sel_to_switch_policy_leaf
+    - name: "Inclure les tâches pour les Access Port to Interface Policy"
+      include_tasks: tasks/access_port_to_int_policy_leaf.yml
+      tags:
+        - access_port_to_int_policy_leaf
+        - aci_access_port_to_int_policy_leaf
+    - name: "Inclure les tâches pour les tenants"
+      include_tasks: tasks/tenant.yml
+      tags:
+        - tenant
+        - aci_tenant
+    - name: "Inclure les tâches pour les VRFs"
+      include_tasks: tasks/vrf.yml
+      tags:
+        - vrf
+        - aci_vrf
+    - name: "Inclure les tâches pour les Bridge Domains"
+      include_tasks: tasks/bd.yml
+      tags:
+        - bd
+        - aci_bd
+    - name: "Inclure les tâches pour les BD Subnets"
+      include_tasks: tasks/bd_subnet.yml
+      tags:
+        - bd_subnet
+        - aci_bd_subnet
+    - name: "Inclure les tâches pour les Application Profiles"
+      include_tasks: tasks/ap.yml
+      tags:
+        - ap
+        - aci_ap
+    - name: "Inclure les tâches pour les Endpoint Groups"
+      include_tasks: tasks/epg.yml
+      tags:
+        - epg
+        - aci_epg
+    - name: "Inclure les tâches pour les associations AEP-EPG"
+      include_tasks: tasks/aep_to_epg.yml
+      tags:
+        - aep_to_epg
+        - aci_aep_to_epg
+    - name: "Inclure les tâches pour les associations EPG-Domain"
+      include_tasks: tasks/epg_to_domain.yml
+      tags:
+        - epg_to_domain
+        - aci_epg_to_domain
+    - name: "Inclure les tâches pour les BGP Timers Policies"
+      include_tasks: tasks/bgp_timers_policy.yml
+      tags:
+        - bgp_timers_policy
+        - aci_bgp_timers_policy
+    - name: "Inclure les tâches pour les Filters"
+      include_tasks: tasks/filter.yml
+      tags:
+        - filter
+        - aci_filter
+    - name: "Inclure les tâches pour les Contracts"
+      include_tasks: tasks/contract.yml
+      tags:
+        - contract
+        - aci_contract
+    - name: "Inclure les tâches pour les Subjects"
+      include_tasks: tasks/contract_subject.yml
+      tags:
+        - contract_subject
+        - aci_contract_subject
+    - name: "Inclure les tâches pour les associations Subject-Filter"
+      include_tasks: tasks/contract_subject_to_filter.yml
+      tags:
+        - contract_subject_to_filter
+        - aci_contract_subject_to_filter
+    - name: "Inclure les tâches pour les associations EPG-Contract"
+      include_tasks: tasks/epg_to_contract.yml
+      tags:
+        - epg_to_contract
+        - aci_epg_to_contract
+    - name: "Inclure les tâches pour les L3Out"
+      include_tasks: tasks/l3out.yml
+      tags:
+        - l3out
+        - aci_l3out
+    - name: "Inclure les tâches pour les L3Out Logical Node Profiles"
+      include_tasks: tasks/l3out_logical_node_profile.yml
+      tags:
+        - l3out_logical_node_profile
+        - aci_l3out_logical_node_profile
+    - name: "Inclure les tâches pour les L3Out Logical Nodes"
+      include_tasks: tasks/l3out_logical_node.yml
+      tags:
+        - l3out_logical_node
+        - aci_l3out_logical_node
+    - name: "Inclure les tâches pour les L3Out Logical Interface Profiles"
+      include_tasks: tasks/l3out_logical_interface_profile.yml
+      tags:
+        - l3out_logical_interface_profile
+        - aci_l3out_logical_interface_profile
+    - name: "Inclure les tâches pour les L3Out Interfaces"
+      include_tasks: tasks/l3out_interface.yml
+      tags:
+        - l3out_interface
+        - aci_l3out_interface
+    - name: "Inclure les tâches pour les L3Out BGP Protocol Profiles"
+      include_tasks: tasks/l3out_bgp_protocol_profile.yml
+      tags:
+        - l3out_bgp_protocol_profile
+        - aci_l3out_bgp_protocol_profile
+    - name: "Inclure les tâches pour les L3Out BGP Peers"
+      include_tasks: tasks/l3out_bgp_peer.yml
+      tags:
+        - l3out_bgp_peer
+        - aci_l3out_bgp_peer
+    - name: "Inclure les tâches pour les L3Out Floating SVI"
+      include_tasks: tasks/l3out_floating_svi.yml
+      tags:
+        - l3out_floating_svi
+        - aci_l3out_floating_svi
+    - name: "Inclure les tâches pour les L3Out Floating SVI Path"
+      include_tasks: tasks/l3out_floating_svi_path.yml
+      tags:
+        - l3out_floating_svi_path
+        - aci_l3out_floating_svi_path
+    - name: "Inclure les tâches pour les L3Out BGP Peer Floating"
+      include_tasks: tasks/l3out_bgp_peer_floating.yml
+      tags:
+        - l3out_bgp_peer_floating
+        - aci_l3out_bgp_peer_floating
+    - name: "Inclure les tâches pour les L3Out External EPGs"
+      include_tasks: tasks/l3out_extepg.yml
+      tags:
+        - l3out_extepg
+        - aci_l3out_extepg
+    - name: "Inclure les tâches pour les L3Out External Subnets"
+      include_tasks: tasks/l3out_extsubnet.yml
+      tags:
+        - l3out_extsubnet
+        - aci_l3out_extsubnet
+
+  post_tasks:
+    - name: "Résumé du déploiement aci_fabric_config"
+      debug:
+        msg: 
+          - "Déploiement ACI depuis aci_fabric_config.xlsx terminé"
+          - "Modules traités: ['aci_interface_policy_cdp', 'aci_epg_to_domain', 'aci_contract_subject_to_filter', 'aci_l3out_bgp_protocol_profile', 'aci_domain_to_vlan_pool', 'aci_l3out_logical_node_profile', 'aci_vlan_pool', 'aci_interface_policy_link_level', 'aci_interface_policy_spanning_tree', 'aci_interface_policy_l2', 'aci_aep_to_domain', 'aci_epg_to_contract', 'aci_switch_policy_vpc_protection_gr', 'aci_interface_policy_mcp', 'aci_l3out_floating_svi_path', 'aci_vlan_pool_encap_block', 'aci_l3out_floating_svi', 'aci_domain', 'aci_l3out_bgp_peer', 'aci_interface_policy_leaf_profile', 'aci_l3out_extsubnet', 'aci_vrf', 'aci_l3out_bgp_peer_floating', 'aci_aep_to_epg', 'aci_bd_subnet', 'aci_contract', 'aci_ap', 'aci_interface_policy_leaf_policy_gr', 'aci_bgp_timers_policy', 'aci_aep', 'aci_l3out', 'aci_switch_policy_leaf_profile', 'aci_l3out_logical_interface_profile', 'aci_interface_config', 'aci_l3out_interface', 'aci_contract_subject', 'aci_epg', 'aci_l3out_extepg', 'aci_interface_policy_port_channel', 'aci_switch_leaf_selector', 'aci_filter', 'aci_interface_policy_lldp', 'aci_access_port_to_int_policy_leaf', 'aci_tenant', 'aci_int_sel_to_switch_policy_leaf', 'aci_l3out_logical_node', 'aci_bd']"
+          - "Nombre total de modules: 47"
+          - "Source: Fichiers CSV dans {{ csv_dir }}/"

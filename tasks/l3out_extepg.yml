@@ -38,7 +38,3 @@
     - l3out_extepg_csv.list is defined
     - item.extepg is defined
     - item.extepg | length > 0
-  tags:
-    - l3out_extepg
-    - aci_l3out_extepg
-    - external_epg

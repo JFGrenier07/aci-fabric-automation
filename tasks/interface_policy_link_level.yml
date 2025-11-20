@@ -33,7 +33,3 @@
     - link_level_policy_csv.list is defined
     - item.link_level_policy is defined
     - item.link_level_policy | length > 0
-  tags:
-    - aci_interface_policy_link_level
-    - interface_policies
-    - infrastructure

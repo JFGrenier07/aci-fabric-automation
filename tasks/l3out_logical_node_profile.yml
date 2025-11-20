@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les profils de nœuds logiques L3Out
+# TÃÂ¢che pour gÃÂ©rer les profils de nÃuds logiques L3Out
 - name: "Read CSV l3out_logical_node_profile"
   read_csv:
     path: "{{ csv_dir }}/l3out_logical_node_profile.csv"
@@ -7,12 +7,12 @@
   register: l3out_logical_node_profile_csv
   when: (csv_dir + '/l3out_logical_node_profile.csv') is file
 
-- name: "Afficher les L3Out Logical Node Profile détectés"
+- name: "Afficher les L3Out Logical Node Profile dÃÂ©tectÃÂ©s"
   debug:
-    msg: "L3Out Logical Node Profile à traiter: {{ l3out_logical_node_profile_csv.list | map(attribute='node_profile') | list }}"
+    msg: "L3Out Logical Node Profile ÃÂ  traiter: {{ l3out_logical_node_profile_csv.list | map(attribute='node_profile') | list }}"
   when: l3out_logical_node_profile_csv is defined and l3out_logical_node_profile_csv.list is defined
 
-- name: "{{ item.node_profile }} - Créer le profil de nœud logique L3Out (l3ext:LNodeP)"
+- name: "{{ item.node_profile }} - CrÃÂ©er le profil de nÃud logique L3Out (l3ext:LNodeP)"
   cisco.aci.aci_l3out_logical_node_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -34,7 +34,3 @@
     - l3out_logical_node_profile_csv.list is defined
     - item.node_profile is defined
     - item.node_profile | length > 0
-  tags:
-    - l3out_logical_node_profile
-    - aci_l3out_logical_node_profile
-    - l3out_profiles

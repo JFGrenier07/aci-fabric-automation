@@ -43,7 +43,3 @@
     - item.domain | length > 0
     - item.vrf is defined
     - item.vrf | length > 0
-  tags:
-    - l3out
-    - aci_l3out
-    - layer3

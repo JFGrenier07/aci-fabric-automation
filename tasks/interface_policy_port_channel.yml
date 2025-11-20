@@ -37,7 +37,3 @@
     - port_channel_policy_csv.list is defined
     - item.port_channel is defined
     - item.port_channel | length > 0
-  tags:
-    - aci_interface_policy_port_channel
-    - interface_policies
-    - infrastructure

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Leaf Policy Groups avec read_csv
+# TÃ¢ches pour gÃ©rer les Leaf Policy Groups avec read_csv
 - name: "Read CSV Leaf Policy Groups"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_leaf_policy_gr.csv"
@@ -7,12 +7,12 @@
   register: leaf_policy_gr_csv
   when: (csv_dir + '/interface_policy_leaf_policy_gr.csv') is file
 
-- name: "Afficher les Leaf Policy Groups détectés"
+- name: "Afficher les Leaf Policy Groups dÃ©tectÃ©s"
   debug:
-    msg: "Leaf Policy Groups à traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
+    msg: "Leaf Policy Groups Ã  traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
   when: leaf_policy_gr_csv is defined and leaf_policy_gr_csv.list is defined
 
-- name: "{{ item.policy_group }} - Créer Leaf Policy Group ({{ item.lag_type }})"
+- name: "{{ item.policy_group }} - CrÃ©er Leaf Policy Group ({{ item.lag_type }})"
   cisco.aci.aci_interface_policy_leaf_policy_group:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -21,7 +21,7 @@
     annotation: ""
     use_ssl: true
     
-    # Paramètres obligatoires
+    # ParamÃ¨tres obligatoires
     policy_group: "{{ item.policy_group }}"
     lag_type: "{{ item.lag_type }}"
     
@@ -36,7 +36,7 @@
     stp_interface_policy: "{{ item.stp_interface_policy | default(omit) }}"
     port_channel_policy: "{{ item.port_channel_policy if (item.lag_type in ['link', 'node'] and item.port_channel_policy) else omit }}"
     
-    # Policies avancées optionnelles
+    # Policies avancÃ©es optionnelles
     monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
     storm_control_interface_policy: "{{ item.storm_control_interface_policy | default(omit) }}"
     l2_interface_policy: "{{ item.l2_interface_policy | default(omit) }}"
@@ -48,7 +48,7 @@
     egress_data_plane_policing_policy: "{{ item.egress_data_plane_policing_policy | default(omit) }}"
     ingress_data_plane_policing_policy: "{{ item.ingress_data_plane_policing_policy | default(omit) }}"
     
-    # État global
+    # Ãtat global
     state: "{{ item.state | default(global_state) }}"
     
   loop: "{{ leaf_policy_gr_csv.list }}"
@@ -57,8 +57,3 @@
     - leaf_policy_gr_csv.list is defined
     - item.policy_group is defined
     - item.policy_group | length > 0
-  tags:
-    - aci_interface_policy_leaf_policy_group
-    - leaf_policy_groups
-    - interface_policies
-    - policy_groups
