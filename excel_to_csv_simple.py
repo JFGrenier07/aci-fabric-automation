@@ -254,7 +254,13 @@ class ExcelToCSVSimple:
             'aci_l3out_extepg_to_contract',
             'aci_l3out_logical_interface_vpc_member',
             'aci_l3out_floating_svi_secondary_ip',
-            'aci_l3out_floating_svi_path_secondary_ip'
+            'aci_l3out_floating_svi_path_secondary_ip',
+
+            # Route Control - Après L3Out
+            'aci_match_rule',
+            'aci_match_route_destination',
+            'aci_route_control_profile',
+            'aci_route_control_context'
         ]
         
         # Filtrer seulement les modules détectés dans l'ordre approprié
