@@ -6,12 +6,12 @@
   register: contract_subject_to_filter_csv
   when: (csv_dir + '/contract_subject_to_filter.csv') is file
 
-- name: "Afficher les Contract Subject to Filter détectés"
+- name: "Display detected Contract Subject to Filter "
   debug:
-    msg: "Contract Subject to Filter à traiter: {{ contract_subject_to_filter_csv.list | map(attribute='subject') | list }}"
+    msg: "Contract Subject to Filter to process: {{ contract_subject_to_filter_csv.list | map(attribute='subject') | list }}"
   when: contract_subject_to_filter_csv is defined and contract_subject_to_filter_csv.list is defined
 
-- name: "{{ item.subject }} - Associer les Subjects aux Filters ACI"
+- name: "Associate Subject to Filter"
   cisco.aci.aci_contract_subject_to_filter:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

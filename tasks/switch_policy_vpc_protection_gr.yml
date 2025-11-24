@@ -1,5 +1,5 @@
 ---
-# TÃ¢che pour gÃ©rer les Switch Policy VPC Protection Groups
+# Task to manage Switch Policy VPC Protection Groups
 - name: "Read CSV switch_policy_vpc_protection_gr"
   read_csv:
     path: "{{ csv_dir }}/switch_policy_vpc_protection_gr.csv"
@@ -7,12 +7,12 @@
   register: switch_policy_vpc_protection_gr_csv
   when: (csv_dir + '/switch_policy_vpc_protection_gr.csv') is file
 
-- name: "Afficher les VPC Protection Groups dÃ©tectÃ©s"
+- name: "Display detected VPC Protection Groups"
   debug:
-    msg: "VPC Protection Groups Ã  traiter: {{ switch_policy_vpc_protection_gr_csv.list | map(attribute='protection_group') | list }}"
+    msg: "VPC Protection Groups to process: {{ switch_policy_vpc_protection_gr_csv.list | map(attribute='protection_group') | list }}"
   when: switch_policy_vpc_protection_gr_csv is defined and switch_policy_vpc_protection_gr_csv.list is defined
 
-- name: "{{ item.protection_group }} - CrÃ©er VPC Protection Group"
+- name: "Create VPC Protection Group"
   cisco.aci.aci_switch_policy_vpc_protection_group:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -34,7 +34,7 @@
     - item.protection_group is defined
     - item.protection_group | length > 0
 
-- name: "â RÃ©sumÃ© VPC Protection Groups"
+- name: "Summary VPC Protection Groups"
   debug:
-    msg: "â {{ switch_policy_vpc_protection_gr_csv.list | length }} VPC Protection Groups crÃ©Ã©s"
+    msg: "{{ switch_policy_vpc_protection_gr_csv.list | length }} VPC Protection Groups created"
   when: switch_policy_vpc_protection_gr_csv is defined and switch_policy_vpc_protection_gr_csv.list | length > 0

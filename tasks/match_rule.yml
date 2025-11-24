@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Match Rules avec read_csv
+# Tasks to manage Match Rules with read_csv
 - name: "Read CSV Match Rules"
   read_csv:
     path: "{{ csv_dir }}/match_rule.csv"
@@ -7,12 +7,12 @@
   register: match_rule_csv
   when: (csv_dir + '/match_rule.csv') is file
 
-- name: "Afficher les Match Rules détectés"
+- name: "Display detected Match Rules"
   debug:
-    msg: "Match Rules à traiter: {{ match_rule_csv.list | map(attribute='match_rule') | list }}"
+    msg: "Match Rules to process: {{ match_rule_csv.list | map(attribute='match_rule') | list }}"
   when: match_rule_csv is defined and match_rule_csv.list is defined
 
-- name: "{{ item.match_rule }} - Créer Match Rule (rtctrl:SubjP)"
+- name: "Create Match Rule"
   cisco.aci.aci_match_rule:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -25,7 +25,7 @@
     match_rule: "{{ item.match_rule }}"
     description: "{{ item.description | default(omit) }}"
 
-    state: "{{ item.state if item.state | length > 0 else global_state }}"
+    # state: "{{ item.state if item.state | length > 0 else global_state }}"
   loop: "{{ match_rule_csv.list }}"
   when:
     - match_rule_csv is defined

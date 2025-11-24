@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Match Route Destinations avec read_csv
+# Tasks to manage Match Route Destinations with read_csv
 - name: "Read CSV Match Route Destinations"
   read_csv:
     path: "{{ csv_dir }}/match_route_destination.csv"
@@ -7,12 +7,12 @@
   register: match_route_destination_csv
   when: (csv_dir + '/match_route_destination.csv') is file
 
-- name: "Afficher les Match Route Destinations détectés"
+- name: "Display detected Match Route Destinations"
   debug:
-    msg: "Match Route Destinations à traiter: {{ match_route_destination_csv.list | map(attribute='ip') | list }}"
+    msg: "Match Route Destinations to process: {{ match_route_destination_csv.list | map(attribute='ip') | list }}"
   when: match_route_destination_csv is defined and match_route_destination_csv.list is defined
 
-- name: "{{ item.ip }} - Ajouter Match Route Destination (rtctrl:MatchRtDest)"
+- name: "Add Match Route Destination"
   cisco.aci.aci_match_route_destination:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -25,7 +25,7 @@
     match_rule: "{{ item.match_rule }}"
     ip: "{{ item.ip }}"
 
-    state: "{{ item.state if item.state | length > 0 else global_state }}"
+    # state: "{{ item.state if item.state | length > 0 else global_state }}"
   loop: "{{ match_route_destination_csv.list }}"
   when:
     - match_route_destination_csv is defined

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Physical Domains avec read_csv
+# Tasks to manage Physical Domains with read_csv
 - name: "Read CSV Physical Domains"
   read_csv:
     path: "{{ csv_dir }}/domain.csv"
@@ -7,12 +7,12 @@
   register: domain_csv
   when: (csv_dir + '/domain.csv') is file
 
-- name: "Afficher les Physical Domains détectés"
+- name: "Display detected Physical Domains "
   debug:
-    msg: "Physical Domains à traiter: {{ domain_csv.list | map(attribute='domain') | list }}"
+    msg: "Physical Domains to process: {{ domain_csv.list | map(attribute='domain') | list }}"
   when: domain_csv is defined and domain_csv.list is defined
 
-- name: "{{ item.domain }} - Créer Physical Domain ACI"
+- name: "Create Physical Domain"
   cisco.aci.aci_domain:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

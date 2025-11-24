@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les External EPGs L3Out
+# Task to manage L3Out External EPGs
 - name: "Read CSV l3out_extepg"
   read_csv:
     path: "{{ csv_dir }}/l3out_extepg.csv"
@@ -7,12 +7,12 @@
   register: l3out_extepg_csv
   when: (csv_dir + '/l3out_extepg.csv') is file
 
-- name: "Afficher les L3Out ExtEPG détectés"
+- name: "Display detected L3Out ExtEPG "
   debug:
-    msg: "L3Out ExtEPG à traiter: {{ l3out_extepg_csv.list | map(attribute='extepg') | list }}"
+    msg: "L3Out ExtEPG to process: {{ l3out_extepg_csv.list | map(attribute='extepg') | list }}"
   when: l3out_extepg_csv is defined and l3out_extepg_csv.list is defined
 
-- name: "{{ item.extepg }} - Créer External EPG L3Out {{ item.extepg }} (l3ext:InstP)"
+- name: "Create External EPG"
   cisco.aci.aci_l3out_extepg:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

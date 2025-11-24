@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les VLAN Pools avec read_csv
+# Tasks to manage VLAN Pools avec read_csv
 - name: "Read CSV VLAN Pools"
   read_csv:
     path: "{{ csv_dir }}/vlan_pool.csv"
@@ -7,12 +7,12 @@
   register: vlan_pool_csv
   when: (csv_dir + '/vlan_pool.csv') is file
 
-- name: "Afficher les VLAN Pools détectés"
+- name: "Display detected VLAN Pools "
   debug:
-    msg: "VLAN Pools à traiter: {{ vlan_pool_csv.list | map(attribute='pool') | list }}"
+    msg: "VLAN Pools to process: {{ vlan_pool_csv.list | map(attribute='pool') | list }}"
   when: vlan_pool_csv is defined and vlan_pool_csv.list is defined
 
-- name: "{{ item.pool }} - Créer VLAN Pool ACI"
+- name: "Create VLAN Pool"
   cisco.aci.aci_vlan_pool:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les policies Port Channel avec read_csv
+# Tasks to manage policies Port Channel with read_csv
 - name: "Read CSV Port Channel Policies"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_port_channel.csv"
@@ -7,12 +7,12 @@
   register: port_channel_policy_csv
   when: (csv_dir + '/interface_policy_port_channel.csv') is file
 
-- name: "Afficher les policies Port Channel détectées"
+- name: "Display detected policies Port Channel "
   debug:
-    msg: "Policies Port Channel à traiter: {{ port_channel_policy_csv.list | map(attribute='port_channel') | list }}"
+    msg: "Policies Port Channel to process: {{ port_channel_policy_csv.list | map(attribute='port_channel') | list }}"
   when: port_channel_policy_csv is defined and port_channel_policy_csv.list is defined
 
-- name: "{{ item.port_channel }} - Manage port channel interface policies (lacp:LagPol)"
+- name: "Manage Port Channel Policy"
   cisco.aci.aci_interface_policy_port_channel:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

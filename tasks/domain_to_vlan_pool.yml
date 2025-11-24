@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les associations Domain-VLAN Pool avec read_csv
+# Tasks to manage associations Domain-VLAN Pool with read_csv
 - name: "Read CSV Domain to VLAN Pool"
   read_csv:
     path: "{{ csv_dir }}/domain_to_vlan_pool.csv"
@@ -7,12 +7,12 @@
   register: domain_to_vlan_pool_csv
   when: (csv_dir + '/domain_to_vlan_pool.csv') is file
 
-- name: "Afficher les associations Domain-VLAN Pool détectées"
+- name: "Display detected associations Domain-VLAN Pool "
   debug:
-    msg: "Associations Domain-VLAN Pool à traiter: {{ domain_to_vlan_pool_csv.list | map(attribute='domain') | list }}"
+    msg: "Associations Domain-VLAN Pool to process: {{ domain_to_vlan_pool_csv.list | map(attribute='domain') | list }}"
   when: domain_to_vlan_pool_csv is defined and domain_to_vlan_pool_csv.list is defined
 
-- name: "{{ item.domain }}-{{ item.vlan_pool }} - Associer Domain au VLAN Pool ACI"
+- name: "Associate Domain to VLAN Pool"
   cisco.aci.aci_domain_to_vlan_pool:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

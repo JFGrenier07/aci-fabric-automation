@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les policies MCP avec read_csv
+# Tasks to manage policies MCP with read_csv
 - name: "Read CSV MCP Policies"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_mcp.csv"
@@ -7,12 +7,12 @@
   register: mcp_policy_csv
   when: (csv_dir + '/interface_policy_mcp.csv') is file
 
-- name: "Afficher les policies MCP détectées"
+- name: "Display detected policies MCP "
   debug:
-    msg: "Policies MCP à traiter: {{ mcp_policy_csv.list | map(attribute='mcp') | list }}"
+    msg: "Policies MCP to process: {{ mcp_policy_csv.list | map(attribute='mcp') | list }}"
   when: mcp_policy_csv is defined and mcp_policy_csv.list is defined
 
-- name: "{{ item.mcp }} - Manage MCP interface policies (mcp:IfPol)"
+- name: "Manage MCP Policy"
   cisco.aci.aci_interface_policy_mcp:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

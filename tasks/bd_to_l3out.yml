@@ -1,5 +1,5 @@
 ---
-# TÃÂ¢che pour gÃÂ©rer les associations Bridge Domain to L3Out
+# Task to manage associations Bridge Domain to L3Out
 - name: "Read CSV bd_to_l3out"
   read_csv:
     path: "{{ csv_dir }}/bd_to_l3out.csv"
@@ -12,7 +12,7 @@
     msg: "BD to L3Out ÃÂ  traiter: {{ bd_to_l3out_csv.list | length | default(0) }}"
   when: bd_to_l3out_csv is defined
 
-- name: "{{ item.bridge_domain }} Ã¢Â {{ item.l3out }} - CrÃÂ©er association BD to L3Out"
+- name: "Associate BD to L3Out"
   cisco.aci.aci_bd_to_l3out:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

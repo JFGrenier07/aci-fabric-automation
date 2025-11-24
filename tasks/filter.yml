@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Filters avec read_csv
+# Tasks to manage Filters with read_csv
 - name: "Read CSV Filters"
   read_csv:
     path: "{{ csv_dir }}/filter.csv"
@@ -7,12 +7,12 @@
   register: filter_csv
   when: (csv_dir + '/filter.csv') is file
 
-- name: "Afficher les Filters détectés"
+- name: "Display detected Filters "
   debug:
-    msg: "Filters à traiter: {{ filter_csv.list | map(attribute='filter') | list }}"
+    msg: "Filters to process: {{ filter_csv.list | map(attribute='filter') | list }}"
   when: filter_csv is defined and filter_csv.list is defined
 
-- name: "{{ item.filter }} - Créer Filter ACI"
+- name: "Create Filter"
   cisco.aci.aci_filter:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

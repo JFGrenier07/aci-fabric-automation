@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Bridge Domains avec read_csv
+# Tasks to manage Bridge Domains with read_csv
 - name: "Read CSV Bridge Domains"
   read_csv:
     path: "{{ csv_dir }}/bd.csv"
@@ -7,12 +7,12 @@
   register: bd_csv
   when: (csv_dir + '/bd.csv') is file
 
-- name: "Afficher les Bridge Domains détectés"
+- name: "Display detected Bridge Domains"
   debug:
-    msg: "Bridge Domains à traiter: {{ bd_csv.list | map(attribute='bd') | list }}"
+    msg: "Bridge Domains to process: {{ bd_csv.list | map(attribute='bd') | list }}"
   when: bd_csv is defined and bd_csv.list is defined
 
-- name: "{{ item.bd }} - Créer le Bridge Domain ACI"
+- name: "Create Bridge Domain"
   cisco.aci.aci_bd:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

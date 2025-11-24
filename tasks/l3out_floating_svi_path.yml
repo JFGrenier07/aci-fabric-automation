@@ -1,5 +1,5 @@
 # L3Out Floating SVI Path Configuration Tasks
-# Gère les attributs de chemin pour les interfaces SVI flottantes
+# Manages path attributes for floating SVI interfaces
 
 - name: "Read CSV l3out_floating_svi_path"
   read_csv:
@@ -8,12 +8,12 @@
   register: l3out_floating_svi_path_csv
   when: (csv_dir + '/l3out_floating_svi_path.csv') is file
 
-- name: "Afficher les L3Out Floating SVI Path détectés"
+- name: "Display detected L3Out Floating SVI Path "
   debug:
-    msg: "L3Out Floating SVI Path à traiter: {{ l3out_floating_svi_path_csv.list | map(attribute='node_id') | list }}"
+    msg: "L3Out Floating SVI Path to process: {{ l3out_floating_svi_path_csv.list | map(attribute='node_id') | list }}"
   when: l3out_floating_svi_path_csv is defined and l3out_floating_svi_path_csv.list is defined
 
-- name: "{{ item.node_id }} - Créer Floating SVI Path Node {{ item.node_id }} (l3ext:RsDynPathAtt)"
+- name: "Create Floating SVI Path"
   cisco.aci.aci_l3out_floating_svi_path:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

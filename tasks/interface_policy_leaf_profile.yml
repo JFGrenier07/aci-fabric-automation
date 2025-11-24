@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les interface policy leaf profiles avec read_csv
+# Tasks to manage interface policy leaf profiles with read_csv
 - name: "Read CSV Interface Policy Leaf Profiles"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_leaf_profile.csv"
@@ -7,12 +7,12 @@
   register: interface_policy_leaf_profile_csv
   when: (csv_dir + '/interface_policy_leaf_profile.csv') is file
 
-- name: "Afficher les Interface Policy Leaf Profiles détectés"
+- name: "Display detected Interface Policy Leaf Profiles "
   debug:
-    msg: "Interface Policy Leaf Profiles à traiter: {{ interface_policy_leaf_profile_csv.list | map(attribute='interface_profile') | list }}"
+    msg: "Interface Policy Leaf Profiles to process: {{ interface_policy_leaf_profile_csv.list | map(attribute='interface_profile') | list }}"
   when: interface_policy_leaf_profile_csv is defined and interface_policy_leaf_profile_csv.list is defined
 
-- name: "{{ item.interface_profile }} - Créer l'Interface Policy Leaf Profile"
+- name: "Create Interface Policy Leaf Profile"
   cisco.aci.aci_interface_policy_leaf_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

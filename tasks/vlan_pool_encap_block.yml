@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les VLAN Encap Blocks avec read_csv
+# Tasks to manage VLAN Encap Blocks avec read_csv
 - name: "Read CSV VLAN Pool Encap Blocks"
   read_csv:
     path: "{{ csv_dir }}/vlan_pool_encap_block.csv"
@@ -7,12 +7,12 @@
   register: vlan_pool_encap_block_csv
   when: (csv_dir + '/vlan_pool_encap_block.csv') is file
 
-- name: "Afficher les VLAN Encap Blocks détectés"
+- name: "Display detected VLAN Encap Blocks "
   debug:
-    msg: "VLAN Encap Blocks à traiter: {{ vlan_pool_encap_block_csv.list | map(attribute='pool') | list }}"
+    msg: "VLAN Encap Blocks to process: {{ vlan_pool_encap_block_csv.list | map(attribute='pool') | list }}"
   when: vlan_pool_encap_block_csv is defined and vlan_pool_encap_block_csv.list is defined
 
-- name: "{{ item.pool }} - Ajouter VLAN Encap Block ACI"
+- name: "Create VLAN Encap Block"
   cisco.aci.aci_vlan_pool_encap_block:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

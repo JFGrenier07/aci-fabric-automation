@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Application Profiles avec read_csv
+# Tasks to manage Application Profiles with read_csv
 - name: "Read CSV Application Profiles"
   read_csv:
     path: "{{ csv_dir }}/ap.csv"
@@ -7,12 +7,12 @@
   register: ap_csv
   when: (csv_dir + '/ap.csv') is file
 
-- name: "Afficher les Application Profiles détectés"
+- name: "Display detected Application Profiles "
   debug:
-    msg: "Application Profiles à traiter: {{ ap_csv.list | map(attribute='ap') | list }}"
+    msg: "Application Profiles to process: {{ ap_csv.list | map(attribute='ap') | list }}"
   when: ap_csv is defined and ap_csv.list is defined
 
-- name: "{{ item.ap }} - Créer Application Profile ACI"
+- name: "Create Application Profile"
   cisco.aci.aci_ap:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

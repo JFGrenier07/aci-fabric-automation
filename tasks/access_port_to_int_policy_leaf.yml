@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les access port to interface policy leaf profile avec read_csv
+# Tasks to manage access port to interface policy leaf profile with read_csv
 - name: "Read CSV Access Port to Interface Policy Leaf Profile"
   read_csv:
     path: "{{ csv_dir }}/access_port_to_int_policy_leaf.csv"
@@ -7,12 +7,12 @@
   register: access_port_to_int_policy_leaf_csv
   when: (csv_dir + '/access_port_to_int_policy_leaf.csv') is file
 
-- name: "Afficher les Access Port to Interface Policy Leaf Profile détectés"
+- name: "Display detected Access Port to Interface Policy Leaf Profile "
   debug:
-    msg: "Access Port Selectors à traiter: {{ access_port_to_int_policy_leaf_csv.list | map(attribute='access_port_selector') | list }}"
+    msg: "Access Port Selectors to process: {{ access_port_to_int_policy_leaf_csv.list | map(attribute='access_port_selector') | list }}"
   when: access_port_to_int_policy_leaf_csv is defined and access_port_to_int_policy_leaf_csv.list is defined
 
-- name: "{{ item.access_port_selector }} - Créer l'Access Port Selector"
+- name: "Create Access Port Selector"
   cisco.aci.aci_access_port_to_interface_policy_leaf_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

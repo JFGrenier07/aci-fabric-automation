@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Route Control Profiles avec read_csv
+# Tasks to manage Route Control Profiles with read_csv
 - name: "Read CSV Route Control Profiles"
   read_csv:
     path: "{{ csv_dir }}/route_control_profile.csv"
@@ -7,12 +7,12 @@
   register: route_control_profile_csv
   when: (csv_dir + '/route_control_profile.csv') is file
 
-- name: "Afficher les Route Control Profiles détectés"
+- name: "Display detected Route Control Profiles"
   debug:
-    msg: "Route Control Profiles à traiter: {{ route_control_profile_csv.list | map(attribute='route_control_profile') | list }}"
+    msg: "Route Control Profiles to process: {{ route_control_profile_csv.list | map(attribute='route_control_profile') | list }}"
   when: route_control_profile_csv is defined and route_control_profile_csv.list is defined
 
-- name: "{{ item.route_control_profile }} - Créer Route Control Profile (rtctrl:Profile)"
+- name: "Create Route Control Profile"
   cisco.aci.aci_route_control_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -25,7 +25,7 @@
     l3out: "{{ item.l3out }}"
     route_control_profile: "{{ item.route_control_profile }}"
 
-    state: "{{ item.state if item.state | length > 0 else global_state }}"
+    # state: "{{ item.state if item.state | length > 0 else global_state }}"
   loop: "{{ route_control_profile_csv.list }}"
   when:
     - route_control_profile_csv is defined

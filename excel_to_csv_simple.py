@@ -3,6 +3,7 @@
 """
 Script Simple : Excel ACI → CSV
 Exporte seulement les onglets avec données dans la première colonne
+Nouvelle architecture: Crée un répertoire de déploiement par fichier Excel
 """
 
 import pandas as pd
@@ -11,83 +12,89 @@ import shutil
 from pathlib import Path
 
 class ExcelToCSVSimple:
-    def __init__(self, excel_file="aci_complete_standardized_fabric.xlsx", csv_dir="csv"):
+    def __init__(self, excel_file="aci_complete_standardized_fabric.xlsx", csv_dir="csv", deployment_dir=None):
         self.excel_file = excel_file
         self.csv_dir = Path(csv_dir)
-        
+        self.deployment_dir = Path(deployment_dir) if deployment_dir else None
+
         # Onglets système à ignorer
         self.ignore_sheets = {
             'Navigation',  # Onglet d'index
             'Sheet1', 'Sheet2', 'Sheet3',  # Onglets par défaut
             'Template', 'Example', 'README'  # Onglets de documentation
         }
-        
+
     def clean_csv_directory(self):
         """Nettoyer complètement le répertoire CSV"""
         if self.csv_dir.exists():
             print(f"🧹 Nettoyage du répertoire {self.csv_dir}...")
             shutil.rmtree(self.csv_dir)
-        
+
         self.csv_dir.mkdir(parents=True, exist_ok=True)
         print(f"✅ Répertoire CSV créé/nettoyé: {self.csv_dir}")
-    
+
     def has_real_data(self, sheet_name):
         """Vérifier si la première colonne contient des données (logique simplifiée)"""
         try:
             df = pd.read_excel(self.excel_file, sheet_name=sheet_name)
-            
+
             # Vérifications de base
             if df.empty:
                 return False
-            
+
             first_col = df.iloc[:, 0]
-            
+
             # Cas spécial: une seule ligne de données (sans header séparé)
             if len(first_col) == 1:
                 value = first_col.iloc[0]
                 if pd.notna(value) and str(value).strip():
                     return True
                 return False
-            
+
             # Cas normal: chercher des données après le header (ligne 0)
             for i in range(1, len(first_col)):
                 value = first_col.iloc[i]
                 if pd.notna(value) and str(value).strip():
                     return True
-                    
+
             return False
-            
+
         except Exception as e:
             print(f"⚠️ Erreur lecture '{sheet_name}': {e}")
             return False
-    
+
     def export_sheet_to_csv(self, sheet_name):
         """Exporter un onglet vers CSV"""
         try:
             # Lire l'onglet
             df = pd.read_excel(self.excel_file, sheet_name=sheet_name)
-            
+
             if df.empty:
                 print(f"⚠️ Onglet '{sheet_name}' vide")
                 return False
-            
+
             # Nom de fichier CSV
             csv_filename = f"{sheet_name}.csv"
             csv_path = self.csv_dir / csv_filename
-            
+
+            # Convertir les booléens en chaînes pour éviter les valeurs vides
+            for col in df.columns:
+                if df[col].dtype == 'bool':
+                    df[col] = df[col].astype(str)
+
             # Exporter vers CSV
             df.to_csv(csv_path, index=False, encoding='utf-8')
-            
+
             # Module ACI correspondant
             module_name = f"aci_{sheet_name}"
             print(f"✅ {sheet_name:<35} → {csv_filename:<40} ({df.shape[0]}x{df.shape[1]}) → {module_name}")
-            
+
             return True
-            
+
         except Exception as e:
             print(f"❌ Erreur export '{sheet_name}': {e}")
             return False
-    
+
     def get_excel_sheets(self):
         """Obtenir la liste des onglets Excel"""
         try:
@@ -96,47 +103,47 @@ class ExcelToCSVSimple:
         except Exception as e:
             print(f"❌ Erreur lecture Excel: {e}")
             return []
-    
+
     def process_all_sheets(self):
         """Traiter tous les onglets avec données dans la première colonne"""
         print("🚀 EXCEL → CSV : Export Simple")
         print("="*80)
-        
+
         # Nettoyer le répertoire CSV
         self.clean_csv_directory()
-        
+
         # Obtenir tous les onglets
         all_sheets = self.get_excel_sheets()
         if not all_sheets:
             print("❌ Aucun onglet trouvé dans le fichier Excel")
             return
-            
+
         print(f"📋 {len(all_sheets)} onglets trouvés dans Excel")
-        
+
         # Statistiques
         exported_count = 0
         skipped_count = 0
-        
+
         print(f"\n🔍 Analyse et export des onglets avec données...")
         print("-"*80)
-        
+
         for sheet_name in all_sheets:
             # Ignorer certains onglets système
             if sheet_name in self.ignore_sheets:
                 print(f"⏭️ {sheet_name:<35} → IGNORÉ (onglet système)")
                 skipped_count += 1
                 continue
-            
+
             # Vérifier si la première colonne a des données
             if not self.has_real_data(sheet_name):
                 print(f"⏭️ {sheet_name:<35} → IGNORÉ (pas de données)")
                 skipped_count += 1
                 continue
-            
+
             # Exporter vers CSV
             if self.export_sheet_to_csv(sheet_name):
                 exported_count += 1
-        
+
         # Résumé
         print("\n" + "="*80)
         print("📊 RÉSUMÉ DE L'EXPORT")
@@ -145,59 +152,68 @@ class ExcelToCSVSimple:
         print(f"⏭️ Onglets ignorés: {skipped_count}")
         print(f"📁 Fichiers CSV créés dans: {self.csv_dir}/")
         print(f"📋 Total onglets traités: {len(all_sheets)}")
-        
+
         # Lister les fichiers CSV créés
         csv_files = list(self.csv_dir.glob("*.csv"))
         if csv_files:
             print(f"\n📁 Fichiers CSV générés:")
             for csv_file in sorted(csv_files):
                 print(f"   • {csv_file.name}")
-        
+
     def create_detected_modules_list(self):
         """Créer la liste des modules ACI détectés"""
         csv_files = list(self.csv_dir.glob("*.csv"))
-        
+
         detected_modules = []
         for csv_file in csv_files:
             sheet_name = csv_file.stem  # Nom sans extension
             module_name = f"aci_{sheet_name}"
             detected_modules.append(module_name)
-        
-        # Créer le fichier YAML
-        detected_file = "detected_modules_csv.yml"
+
+        # Créer le fichier YAML dans le répertoire de déploiement
+        if self.deployment_dir:
+            detected_file = self.deployment_dir / "detected_modules_csv.yml"
+        else:
+            detected_file = Path("detected_modules_csv.yml")
+
         with open(detected_file, 'w') as f:
             f.write("# Modules ACI détectés depuis les fichiers CSV\n")
             f.write("# Généré automatiquement par excel_to_csv_simple.py\n")
             f.write("detected_modules:\n")
             for module in sorted(detected_modules):
                 f.write(f"- {module}\n")
-        
+
         print(f"✅ Liste des modules créée: {detected_file}")
         return detected_modules
 
     def create_dynamic_playbook(self, excel_file, detected_modules):
         """Créer un playbook Ansible dynamique basé sur les modules détectés"""
-        
+
         # Extraire le nom du fichier Excel sans extension
         excel_name = Path(excel_file).stem
-        playbook_name = f"{excel_name}.yml"
-        
+
+        # Sauvegarder dans le répertoire de déploiement
+        if self.deployment_dir:
+            playbook_name = self.deployment_dir / f"{excel_name}.yml"
+        else:
+            playbook_name = f"{excel_name}.yml"
+
         print(f"\n🎯 GÉNÉRATION PLAYBOOK DYNAMIQUE")
         print(f"📋 Excel source: {excel_file}")
         print(f"📝 Playbook cible: {playbook_name}")
         print(f"🔧 Modules à inclure: {len(detected_modules)}")
-        
+
         # Ordre d'exécution des modules (infrastructure → tenant → sécurité)
         module_order = [
             # Infrastructure - Ordre critique
             'aci_vlan_pool',
-            'aci_vlan_pool_encap_block', 
+            'aci_vlan_pool_encap_block',
             'aci_domain',
             'aci_domain_to_vlan_pool',
             'aci_aep',
             'aci_aep_to_domain',
             'aci_switch_policy_vpc_protection_gr',
-            
+
             # Interface Policies
             'aci_interface_policy_cdp',
             'aci_interface_policy_link_level',
@@ -207,14 +223,14 @@ class ExcelToCSVSimple:
             'aci_interface_policy_spanning_tree',
             'aci_interface_config',
             'aci_interface_policy_leaf_policy_gr',
-            
+
             # Switch and Interface Profiles - Après interface policies
             'aci_switch_policy_leaf_profile',
             'aci_interface_policy_leaf_profile',
             'aci_switch_leaf_selector',
             'aci_int_sel_to_switch_policy_leaf',
             'aci_access_port_to_int_policy_leaf',
-            
+
             # Tenant - Configuration logique
             'aci_tenant',
             'aci_vrf',
@@ -225,19 +241,19 @@ class ExcelToCSVSimple:
             'aci_epg',
             'aci_aep_to_epg',
             'aci_epg_to_domain',
-            
+
             # BGP Policies - Avant L3Out
             'aci_bgp_timers_policy',
             'aci_bgp_best_path_policy',
             'aci_bgp_address_family_context_policy',
-            
+
             # Security - Contracts et Filters
             'aci_filter',
             'aci_contract',
             'aci_contract_subject',
             'aci_contract_subject_to_filter',
             'aci_epg_to_contract',
-            
+
             # L3Out Configuration
             'aci_l3out',
             'aci_l3out_logical_node_profile',
@@ -262,17 +278,17 @@ class ExcelToCSVSimple:
             'aci_route_control_profile',
             'aci_route_control_context'
         ]
-        
+
         # Filtrer seulement les modules détectés dans l'ordre approprié
         ordered_modules = [m for m in module_order if m in detected_modules]
-        
+
         # Créer le contenu du playbook
         playbook_content = f'''---
 - name: "Déploiement ACI depuis {excel_name}.xlsx"
   hosts: localhost
   connection: local
   gather_facts: false
-  
+
   vars:
     csv_dir: "csv"
     # Variable globale pour contrôler l'état des objets ACI
@@ -281,7 +297,7 @@ class ExcelToCSVSimple:
   pre_tasks:
     - name: "🎯 Afficher l'action à effectuer"
       debug:
-        msg: 
+        msg:
           - "=== ACI AUTOMATION DYNAMIQUE - {excel_name.upper()} ==="
           - "📁 Répertoire CSV: {{{{ csv_dir }}}}/"
           - "🌐 Fabric ACI: {{{{ aci_hostname }}}}"
@@ -300,12 +316,12 @@ class ExcelToCSVSimple:
         # Ajouter les tâches pour chaque module détecté
         for module in ordered_modules:
             task_name = module.replace('aci_', '')
-            
+
             # Descriptions spécifiques par catégorie
             descriptions = {
                 'vlan_pool': 'VLAN Pools',
                 'vlan_pool_encap_block': 'VLAN Encap Blocks (onglet séparé)',
-                'domain': 'Physical Domains', 
+                'domain': 'Physical Domains',
                 'domain_to_vlan_pool': 'associations Domain-VLAN Pool (onglet séparé)',
                 'aep': 'AEP (Attachable Entity Profiles)',
                 'aep_to_domain': 'associations AEP-Domain (onglet séparé)',
@@ -355,14 +371,18 @@ class ExcelToCSVSimple:
                 'l3out_extepg_to_contract': 'associations L3Out ExtEPG to Contract',
                 'l3out_logical_interface_vpc_member': 'L3Out Logical Interface VPC Members',
                 'l3out_floating_svi_secondary_ip': 'L3Out Floating SVI Secondary IPs',
-                'l3out_floating_svi_path_secondary_ip': 'L3Out Floating SVI Path Secondary IPs'
+                'l3out_floating_svi_path_secondary_ip': 'L3Out Floating SVI Path Secondary IPs',
+                'match_rule': 'Match Rules',
+                'match_route_destination': 'Match Route Destinations',
+                'route_control_profile': 'Route Control Profiles',
+                'route_control_context': 'Route Control Contexts'
             }
-            
+
             description = descriptions.get(task_name, task_name)
-            
+
             playbook_content += f'''
     - name: "Inclure les tâches pour les {description}"
-      include_tasks: tasks/{task_name}.yml
+      include_tasks: ../tasks/{task_name}.yml
       tags:
         - {task_name}
         - {module}'''
@@ -373,7 +393,7 @@ class ExcelToCSVSimple:
   post_tasks:
     - name: "Résumé du déploiement {excel_name}"
       debug:
-        msg: 
+        msg:
           - "Déploiement ACI depuis {excel_name}.xlsx terminé"
           - "Modules traités: {detected_modules}"
           - "Nombre total de modules: {len(detected_modules)}"
@@ -383,53 +403,138 @@ class ExcelToCSVSimple:
         # Écrire le fichier playbook
         with open(playbook_name, 'w', encoding='utf-8') as f:
             f.write(playbook_content)
-        
+
         print(f"✅ Playbook dynamique créé: {playbook_name}")
         print(f"📋 Modules inclus dans l'ordre: {ordered_modules}")
-        
+
         return playbook_name
+
+    def copy_ansible_config_files(self):
+        """Générer ansible.cfg et inventory.yml dans le répertoire de déploiement"""
+        if not self.deployment_dir:
+            return
+
+        print(f"\n📋 GÉNÉRATION DES FICHIERS DE CONFIGURATION")
+        print("="*60)
+
+        # Toujours générer ansible.cfg
+        ansible_cfg_dest = self.deployment_dir / 'ansible.cfg'
+        ansible_cfg_content = """[defaults]
+inventory = inventory.yml
+host_key_checking = False
+retry_files_enabled = False
+deprecation_warnings = False
+stdout_callback = yaml
+bin_ansible_callbacks = True
+
+[privilege_escalation]
+become = False
+"""
+        with open(ansible_cfg_dest, 'w') as f:
+            f.write(ansible_cfg_content)
+        print(f"✅ ansible.cfg → {ansible_cfg_dest}")
+
+        # Toujours générer inventory.yml avec placeholders
+        inventory_dest = self.deployment_dir / 'inventory.yml'
+        inventory_content = """---
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+      # Variables de connexion ACI
+      # ⚠️  IMPORTANT: Remplir les valeurs ci-dessous avant de déployer
+      aci_hostname: "YOUR_APIC_IP_HERE"          # Ex: 192.168.1.1
+      aci_username: "YOUR_USERNAME_HERE"          # Ex: admin
+      aci_password: "YOUR_PASSWORD_HERE"          # Ex: MySecurePassword123
+      aci_validate_certs: false
+"""
+        with open(inventory_dest, 'w') as f:
+            f.write(inventory_content)
+        print(f"✅ inventory.yml → {inventory_dest}")
+        print(f"⚠️  N'oubliez pas de remplir vos credentials dans inventory.yml!")
+
+        # Créer le répertoire logs pour éviter les warnings Ansible
+        logs_dir = self.deployment_dir / 'logs'
+        logs_dir.mkdir(exist_ok=True)
+        print(f"✅ Répertoire logs créé: {logs_dir}/")
 
 def main():
     """Fonction principale"""
     import sys
-    
+
     print("🎯 Excel ACI → CSV Simple Export")
+    print("📦 Nouvelle Architecture: Répertoire de déploiement par Excel")
     print("="*60)
-    
+
     # Vérifier les paramètres - OBLIGATOIRE pour la sécurité
     if len(sys.argv) < 2:
         print("❌ ERREUR: Fichier Excel obligatoire pour éviter les déploiements accidentels")
         print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
         print("🔒 Sécurité: Aucun fichier par défaut pour éviter les catastrophes")
         return
-        
+
     excel_file = sys.argv[1]
     print(f"📁 Fichier Excel spécifié: {excel_file}")
-    
+
     # Vérifier que le fichier Excel existe
     if not os.path.exists(excel_file):
         print(f"❌ Fichier Excel non trouvé: {excel_file}")
         print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
         print("🔍 Vérifiez que le fichier existe dans le répertoire courant")
         return
-    
+
     print(f"✅ Fichier Excel trouvé: {excel_file}")
-    
-    # Initialiser l'exporteur
-    exporter = ExcelToCSVSimple(excel_file, "csv")
-    
+
+    # Extraire le nom du fichier Excel sans extension
+    excel_name = Path(excel_file).stem
+
+    # Créer le répertoire de déploiement
+    deployment_dir = Path(excel_name)
+    print(f"\n📂 CRÉATION DU RÉPERTOIRE DE DÉPLOIEMENT")
+    print("="*60)
+    print(f"📁 Répertoire de déploiement: {deployment_dir}/")
+
+    if deployment_dir.exists():
+        print(f"⚠️ Le répertoire {deployment_dir}/ existe déjà")
+    else:
+        deployment_dir.mkdir(parents=True, exist_ok=True)
+        print(f"✅ Répertoire créé: {deployment_dir}/")
+
+    # Créer le sous-répertoire CSV
+    csv_dir = deployment_dir / "csv"
+    print(f"📁 Répertoire CSV: {csv_dir}/")
+
+    # Initialiser l'exporteur avec les nouveaux chemins
+    exporter = ExcelToCSVSimple(excel_file, csv_dir, deployment_dir)
+
     # Traiter tous les onglets
     exporter.process_all_sheets()
-    
+
     # Créer la liste des modules détectés
     detected_modules = exporter.create_detected_modules_list()
-    
+
     # Créer le playbook dynamique
     playbook_name = exporter.create_dynamic_playbook(excel_file, detected_modules)
-    
-    print(f"\n🎯 Export terminé! {len(detected_modules)} modules ACI détectés.")
-    print(f"🚀 Playbook dynamique créé: {playbook_name}")
-    print("💡 Prêt pour le déploiement Ansible ultra-propre (0 SKIPPED)!")
+
+    # Copier les fichiers de configuration Ansible
+    exporter.copy_ansible_config_files()
+
+    print(f"\n{'='*60}")
+    print("🎯 DÉPLOIEMENT PRÊT!")
+    print(f"{'='*60}")
+    print(f"📁 Répertoire: {deployment_dir}/")
+    print(f"📂 Structure:")
+    print(f"   ├── csv/                    ({len(detected_modules)} fichiers CSV)")
+    print(f"   ├── {excel_name}.yml        (Playbook Ansible)")
+    print(f"   ├── ansible.cfg             (Configuration Ansible)")
+    print(f"   ├── inventory.yml           (Inventaire)")
+    print(f"   └── detected_modules_csv.yml")
+    print(f"\n🚀 Pour déployer:")
+    print(f"   cd {deployment_dir}/")
+    print(f"   ansible-playbook {excel_name}.yml -i inventory.yml")
+    print(f"\n💡 Les tasks restent partagées dans ../tasks/")
 
 if __name__ == "__main__":
     main()

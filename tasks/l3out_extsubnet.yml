@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les External Subnets L3Out
+# Task to manage L3Out External Subnets
 - name: "Read CSV l3out_extsubnet"
   read_csv:
     path: "{{ csv_dir }}/l3out_extsubnet.csv"
@@ -7,12 +7,12 @@
   register: l3out_extsubnet_csv
   when: (csv_dir + '/l3out_extsubnet.csv') is file
 
-- name: "Afficher les L3Out ExtSubnet détectés"
+- name: "Display detected L3Out ExtSubnet "
   debug:
-    msg: "L3Out ExtSubnet à traiter: {{ l3out_extsubnet_csv.list | map(attribute='network') | list }}"
+    msg: "L3Out ExtSubnet to process: {{ l3out_extsubnet_csv.list | map(attribute='network') | list }}"
   when: l3out_extsubnet_csv is defined and l3out_extsubnet_csv.list is defined
 
-- name: "{{ item.network }} - Créer External Subnet L3Out {{ item.network }} (l3ext:Subnet)"
+- name: "Create External Subnet"
   cisco.aci.aci_l3out_extsubnet:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les associations L3Out External EPG to Contract
+# Task to manage associations L3Out External EPG to Contract
 - name: "Read CSV l3out_extepg_to_contract"
   read_csv:
     path: "{{ csv_dir }}/l3out_extepg_to_contract.csv"
@@ -7,12 +7,12 @@
   register: l3out_extepg_to_contract_csv
   when: (csv_dir + '/l3out_extepg_to_contract.csv') is file
 
-- name: "Afficher les associations L3Out ExtEPG to Contract détectés"
+- name: "Display detected itemss"
   debug:
-    msg: "L3Out ExtEPG to Contract à traiter: {{ l3out_extepg_to_contract_csv.list | length | default(0) }}"
+    msg: "L3Out ExtEPG to Contract to process: {{ l3out_extepg_to_contract_csv.list | length | default(0) }}"
   when: l3out_extepg_to_contract_csv is defined
 
-- name: "{{ item.extepg }} ’ {{ item.contract }} - Créer association L3Out ExtEPG to Contract"
+- name: "Associate External EPG to Contract"
   cisco.aci.aci_l3out_extepg_to_contract:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -39,7 +39,7 @@
     - l3out_extepg_to_contract
     - aci_l3out_extepg_to_contract
 
-- name: " Résumé L3Out ExtEPG to Contract"
+- name: " Summary L3Out ExtEPG to Contract"
   debug:
-    msg: " {{ l3out_extepg_to_contract_csv.list | length }} associations L3Out ExtEPG to Contract créées"
+    msg: " {{ l3out_extepg_to_contract_csv.list | length }} associations L3Out ExtEPG to Contract cres"
   when: l3out_extepg_to_contract_csv is defined and l3out_extepg_to_contract_csv.list | length > 0

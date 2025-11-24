@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les policies CDP avec read_csv
+# Tasks to manage policies CDP with read_csv
 - name: "Read CSV CDP Policies"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_cdp.csv"
@@ -7,12 +7,12 @@
   register: cdp_policy_csv
   when: (csv_dir + '/interface_policy_cdp.csv') is file
 
-- name: "Afficher les policies CDP détectées"
+- name: "Display detected policies CDP "
   debug:
-    msg: "Policies CDP à traiter: {{ cdp_policy_csv.list | map(attribute='cdp_policy') | list }}"
+    msg: "Policies CDP to process: {{ cdp_policy_csv.list | map(attribute='cdp_policy') | list }}"
   when: cdp_policy_csv is defined and cdp_policy_csv.list is defined
 
-- name: "{{ item.cdp_policy }} - Manage CDP interface policies (cdp:IfPol)"
+- name: "Manage CDP Policy"
   cisco.aci.aci_interface_policy_cdp:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -21,9 +21,9 @@
     annotation: ""
     use_ssl: true
     cdp_policy: "{{ item.cdp_policy }}"
-    admin_state: "{{ item.admin_state }}"
+    admin_state: "{{ item.admin_state if item.admin_state != '' else omit }}"
     description: "{{ item.description | default('') }}"
-    state: "{{ item.state | default(global_state) }}"
+    # state: "{{ item.state | default(global_state) }}"
   loop: "{{ cdp_policy_csv.list }}"
   when:
     - cdp_policy_csv is defined

@@ -1,5 +1,5 @@
 ---
-# TÃ¢ches pour gÃ©rer les Leaf Policy Groups avec read_csv
+# Task to manage Leaf Policy Groups avec read_csv
 - name: "Read CSV Leaf Policy Groups"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_leaf_policy_gr.csv"
@@ -12,7 +12,7 @@
     msg: "Leaf Policy Groups Ã  traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
   when: leaf_policy_gr_csv is defined and leaf_policy_gr_csv.list is defined
 
-- name: "{{ item.policy_group }} - CrÃ©er Leaf Policy Group ({{ item.lag_type }})"
+- name: "Create Leaf Policy Group"
   cisco.aci.aci_interface_policy_leaf_policy_group:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

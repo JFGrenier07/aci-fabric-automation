@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les BGP Timers Policies avec read_csv
+# Tasks to manage BGP Timers Policies with read_csv
 - name: "Read CSV bgp_timers_policy"
   read_csv:
     path: "{{ csv_dir }}/bgp_timers_policy.csv"
@@ -7,12 +7,12 @@
   register: bgp_timers_policy_csv
   when: (csv_dir + '/bgp_timers_policy.csv') is file
 
-- name: "Afficher les BGP Timers Policies détectées"
+- name: "Display detected BGP Timers Policies "
   debug:
-    msg: "BGP Timers Policies à traiter: {{ bgp_timers_policy_csv.list | map(attribute='bgp_timers_policy') | list }}"
+    msg: "BGP Timers Policies to process: {{ bgp_timers_policy_csv.list | map(attribute='bgp_timers_policy') | list }}"
   when: bgp_timers_policy_csv is defined and bgp_timers_policy_csv.list is defined
 
-- name: "{{ item.tenant }}/{{ item.bgp_timers_policy }} - Créer la BGP Timers Policy ACI"
+- name: "Create BGP Timers Policy"
   cisco.aci.aci_bgp_timers_policy:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

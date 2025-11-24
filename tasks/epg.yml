@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Endpoint Groups avec read_csv
+# Tasks to manage Endpoint Groups with read_csv
 - name: "Read CSV Endpoint Groups"
   read_csv:
     path: "{{ csv_dir }}/epg.csv"
@@ -7,12 +7,12 @@
   register: epg_csv
   when: (csv_dir + '/epg.csv') is file
 
-- name: "Afficher les Endpoint Groups détectés"
+- name: "Display detected Endpoint Groups"
   debug:
-    msg: "Endpoint Groups à traiter: {{ epg_csv.list | map(attribute='epg') | list }}"
+    msg: "Endpoint Groups to process: {{ epg_csv.list | map(attribute='epg') | list }}"
   when: epg_csv is defined and epg_csv.list is defined
 
-- name: "{{ item.epg }} - Créer Endpoint Group ACI"
+- name: "Create Endpoint Group"
   cisco.aci.aci_epg:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

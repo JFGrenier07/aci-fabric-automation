@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les AEP (Attachable Entity Profiles) avec read_csv
+# Tasks to manage AEP (Attachable Entity Profiles) with read_csv
 - name: "Read CSV AEP"
   read_csv:
     path: "{{ csv_dir }}/aep.csv"
@@ -7,12 +7,12 @@
   register: aep_csv
   when: (csv_dir + '/aep.csv') is file
 
-- name: "Afficher les AEP détectés"
+- name: "Display detected AEP "
   debug:
-    msg: "AEP à traiter: {{ aep_csv.list | map(attribute='aep') | list }}"
+    msg: "AEP to process: {{ aep_csv.list | map(attribute='aep') | list }}"
   when: aep_csv is defined and aep_csv.list is defined
 
-- name: "{{ item.aep }} - Créer AEP ACI"
+- name: "Create AEP"
   cisco.aci.aci_aep:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les Contracts avec read_csv
+# Tasks to manage Contracts with read_csv
 - name: "Read CSV Contracts"
   read_csv:
     path: "{{ csv_dir }}/contract.csv"
@@ -7,12 +7,12 @@
   register: contract_csv
   when: (csv_dir + '/contract.csv') is file
 
-- name: "Afficher les Contracts détectés"
+- name: "Display detected Contracts"
   debug:
-    msg: "Contracts à traiter: {{ contract_csv.list | map(attribute='contract') | list }}"
+    msg: "Contracts to process: {{ contract_csv.list | map(attribute='contract') | list }}"
   when: contract_csv is defined and contract_csv.list is defined
 
-- name: "{{ item.contract }} - Créer Contract ACI"
+- name: "Create Contract"
   cisco.aci.aci_contract:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les VRFs avec read_csv
+# Tasks to manage VRFs with read_csv
 - name: "Read CSV VRFs"
   read_csv:
     path: "{{ csv_dir }}/vrf.csv"
@@ -7,12 +7,12 @@
   register: vrf_csv
   when: (csv_dir + '/vrf.csv') is file
 
-- name: "Afficher les VRFs détectés"
+- name: "Display detected VRFs"
   debug:
-    msg: "VRFs à traiter: {{ vrf_csv.list | map(attribute='vrf') | list }}"
+    msg: "VRFs to process: {{ vrf_csv.list | map(attribute='vrf') | list }}"
   when: vrf_csv is defined and vrf_csv.list is defined
 
-- name: "{{ item.vrf }} - Créer VRF ACI"
+- name: "Create VRF"
   cisco.aci.aci_vrf:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

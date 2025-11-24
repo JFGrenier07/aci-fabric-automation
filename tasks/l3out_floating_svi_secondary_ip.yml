@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les L3Out Floating SVI Secondary IPs
+# Task to manage L3Out Floating SVI Secondary IPs
 - name: "Read CSV l3out_floating_svi_secondary_ip"
   read_csv:
     path: "{{ csv_dir }}/l3out_floating_svi_secondary_ip.csv"
@@ -7,12 +7,12 @@
   register: l3out_floating_svi_secondary_ip_csv
   when: (csv_dir + '/l3out_floating_svi_secondary_ip.csv') is file
 
-- name: "Afficher les L3Out Floating SVI Secondary IPs détectés"
+- name: "Display detected itemss"
   debug:
-    msg: "L3Out Floating SVI Secondary IPs à traiter: {{ l3out_floating_svi_secondary_ip_csv.list | length | default(0) }}"
+    msg: "L3Out Floating SVI Secondary IPs to process: {{ l3out_floating_svi_secondary_ip_csv.list | length | default(0) }}"
   when: l3out_floating_svi_secondary_ip_csv is defined
 
-- name: "{{ item.secondary_ip }} - Créer L3Out Floating SVI Secondary IP"
+- name: "Create Floating SVI Secondary IP"
   cisco.aci.aci_l3out_floating_svi_secondary_ip:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -41,7 +41,7 @@
     - l3out_floating_svi_secondary_ip
     - aci_l3out_floating_svi_secondary_ip
 
-- name: " Résumé L3Out Floating SVI Secondary IPs"
+- name: " Summary L3Out Floating SVI Secondary IPs"
   debug:
-    msg: " {{ l3out_floating_svi_secondary_ip_csv.list | length }} L3Out Floating SVI Secondary IPs créés"
+    msg: " {{ l3out_floating_svi_secondary_ip_csv.list | length }} L3Out Floating SVI Secondary IPs created"
   when: l3out_floating_svi_secondary_ip_csv is defined and l3out_floating_svi_secondary_ip_csv.list | length > 0

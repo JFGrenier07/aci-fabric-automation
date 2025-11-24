@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les policies Link Level avec read_csv
+# Tasks to manage policies Link Level with read_csv
 - name: "Read CSV Link Level Policies"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_link_level.csv"
@@ -7,12 +7,12 @@
   register: link_level_policy_csv
   when: (csv_dir + '/interface_policy_link_level.csv') is file
 
-- name: "Afficher les policies Link Level détectées"
+- name: "Display detected policies Link Level "
   debug:
-    msg: "Policies Link Level à traiter: {{ link_level_policy_csv.list | map(attribute='link_level_policy') | list }}"
+    msg: "Policies Link Level to process: {{ link_level_policy_csv.list | map(attribute='link_level_policy') | list }}"
   when: link_level_policy_csv is defined and link_level_policy_csv.list is defined
 
-- name: "{{ item.link_level_policy }} - Manage Link Level interface policies (fabric:HIfPol)"
+- name: "Manage Link Level Policy"
   cisco.aci.aci_interface_policy_link_level:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# TÃ¢che pour gÃ©rer les BGP Peers Floating L3Out via REST API
+# Task to manage BGP Peers Floating L3Out via REST API
 - name: "Read CSV l3out_bgp_peer_floating"
   read_csv:
     path: "{{ csv_dir }}/l3out_bgp_peer_floating.csv"
@@ -12,7 +12,7 @@
     msg: "L3Out BGP Peer Floating Ã  traiter: {{ l3out_bgp_peer_floating_csv.list | map(attribute='peer_ip') | list }}"
   when: l3out_bgp_peer_floating_csv is defined and l3out_bgp_peer_floating_csv.list is defined
 
-- name: "{{ item.peer_ip }} - CrÃ©er BGP Peer Floating L3Out (via REST API)"
+- name: "Create BGP Peer Floating"
   cisco.aci.aci_rest:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

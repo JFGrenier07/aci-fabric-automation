@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les BD Subnets avec read_csv
+# Tasks to manage BD Subnets with read_csv
 - name: "Read CSV BD Subnets"
   read_csv:
     path: "{{ csv_dir }}/bd_subnet.csv"
@@ -7,12 +7,12 @@
   register: bd_subnet_csv
   when: (csv_dir + '/bd_subnet.csv') is file
 
-- name: "Afficher les BD Subnets détectés"
+- name: "Display detected BD Subnets"
   debug:
-    msg: "BD Subnets à traiter: {{ bd_subnet_csv.list | map(attribute='gateway') | list }}"
+    msg: "BD Subnets to process: {{ bd_subnet_csv.list | map(attribute='gateway') | list }}"
   when: bd_subnet_csv is defined and bd_subnet_csv.list is defined
 
-- name: "{{ item.gateway }} - Créer BD Subnet ACI"
+- name: "Create BD Subnet"
   cisco.aci.aci_bd_subnet:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# TÃÂ¢ches pour gÃÂ©rer les associations interface selector to switch policy leaf profile avec read_csv
+# Task to manage associations interface selector to switch policy leaf profile avec read_csv
 - name: "Read CSV Interface Selector to Switch Policy Leaf Profile"
   read_csv:
     path: "{{ csv_dir }}/int_sel_to_switch_policy_leaf.csv"
@@ -12,7 +12,7 @@
     msg: "Associations ÃÂ  traiter: {{ int_sel_to_switch_policy_leaf_csv.list | length }} associations"
   when: int_sel_to_switch_policy_leaf_csv is defined and int_sel_to_switch_policy_leaf_csv.list is defined
 
-- name: "{{ item.leaf_profile }} Ã¢Â {{ item.interface_selector }} - CrÃÂ©er l'association"
+- name: "Associate Interface Selector to Switch Policy"
   cisco.aci.aci_interface_selector_to_switch_policy_leaf_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

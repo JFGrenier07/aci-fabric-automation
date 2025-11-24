@@ -6,12 +6,12 @@
   register: aep_to_epg_csv
   when: (csv_dir + '/aep_to_epg.csv') is file
 
-- name: "Afficher les AEP to EPG détectés"
+- name: "Display detected AEP to EPG "
   debug:
-    msg: "AEP to EPG à traiter: {{ aep_to_epg_csv.list | map(attribute='aep') | list }}"
+    msg: "AEP to EPG to process: {{ aep_to_epg_csv.list | map(attribute='aep') | list }}"
   when: aep_to_epg_csv is defined and aep_to_epg_csv.list is defined
 
-- name: "{{ item.aep }} - Associer AEP aux EPG"
+- name: "Associate AEP to EPG"
   cisco.aci.aci_aep_to_epg:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

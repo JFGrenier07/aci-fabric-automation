@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les switch leaf selectors avec read_csv
+# Tasks to manage switch leaf selectors avec read_csv
 - name: "Read CSV Switch Leaf Selectors"
   read_csv:
     path: "{{ csv_dir }}/switch_leaf_selector.csv"
@@ -7,12 +7,12 @@
   register: switch_leaf_selector_csv
   when: (csv_dir + '/switch_leaf_selector.csv') is file
 
-- name: "Afficher les Switch Leaf Selectors détectés"
+- name: "Display detected Switch Leaf Selectors "
   debug:
-    msg: "Switch Leaf Selectors à traiter: {{ switch_leaf_selector_csv.list | map(attribute='leaf') | list }}"
+    msg: "Switch Leaf Selectors to process: {{ switch_leaf_selector_csv.list | map(attribute='leaf') | list }}"
   when: switch_leaf_selector_csv is defined and switch_leaf_selector_csv.list is defined
 
-- name: "{{ item.leaf }} - Créer le Switch Leaf Selector"
+- name: "Create Switch Leaf Selector"
   cisco.aci.aci_switch_leaf_selector:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les associations AEP-Domain avec read_csv
+# Tasks to manage associations AEP-Domain with read_csv
 - name: "Read CSV AEP to Domain"
   read_csv:
     path: "{{ csv_dir }}/aep_to_domain.csv"
@@ -7,12 +7,12 @@
   register: aep_to_domain_csv
   when: (csv_dir + '/aep_to_domain.csv') is file
 
-- name: "Afficher les associations AEP-Domain détectées"
+- name: "Display detected associations AEP-Domain "
   debug:
-    msg: "Associations AEP-Domain à traiter: {{ aep_to_domain_csv.list | map(attribute='aep') | list }}"
+    msg: "Associations AEP-Domain to process: {{ aep_to_domain_csv.list | map(attribute='aep') | list }}"
   when: aep_to_domain_csv is defined and aep_to_domain_csv.list is defined
 
-- name: "{{ item.aep }}-{{ item.domain }} - Associer AEP au Domain ACI"
+- name: "Associate AEP to Domain"
   cisco.aci.aci_aep_to_domain:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

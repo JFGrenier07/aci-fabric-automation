@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les associations EPG-Domain avec read_csv
+# Tasks to manage associations EPG-Domain with read_csv
 - name: "Read CSV EPG to Domain"
   read_csv:
     path: "{{ csv_dir }}/epg_to_domain.csv"
@@ -7,12 +7,12 @@
   register: epg_to_domain_csv
   when: (csv_dir + '/epg_to_domain.csv') is file
 
-- name: "Afficher les associations EPG-Domain détectées"
+- name: "Display detected associations EPG-Domain "
   debug:
-    msg: "Associations EPG-Domain à traiter: {{ epg_to_domain_csv.list | map(attribute='epg') | list }}"
+    msg: "Associations EPG-Domain to process: {{ epg_to_domain_csv.list | map(attribute='epg') | list }}"
   when: epg_to_domain_csv is defined and epg_to_domain_csv.list is defined
 
-- name: "{{ item.epg }}-{{ item.domain }} - Associer EPG au Domain ACI"
+- name: "Associate EPG to Domain"
   cisco.aci.aci_epg_to_domain:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

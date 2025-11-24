@@ -1,5 +1,5 @@
 ---
-# Tâche pour gérer les L3Out Logical Interface VPC Members
+# Task to manage L3Out Logical Interface VPC Members
 - name: "Read CSV l3out_logical_interface_vpc_mem"
   read_csv:
     path: "{{ csv_dir }}/l3out_logical_interface_vpc_mem.csv"
@@ -7,12 +7,12 @@
   register: l3out_logical_interface_vpc_mem_csv
   when: (csv_dir + '/l3out_logical_interface_vpc_mem.csv') is file
 
-- name: "Afficher les L3Out Logical Interface VPC Members détectés"
+- name: "Display detected itemss"
   debug:
-    msg: "L3Out Logical Interface VPC Members à traiter: {{ l3out_logical_interface_vpc_mem_csv.list | length | default(0) }}"
+    msg: "L3Out Logical Interface VPC Members to process: {{ l3out_logical_interface_vpc_mem_csv.list | length | default(0) }}"
   when: l3out_logical_interface_vpc_mem_csv is defined
 
-- name: "{{ item.path_ep }} - Créer L3Out Logical Interface VPC Member"
+- name: "Create Logical Interface VPC Member"
   cisco.aci.aci_l3out_logical_interface_vpc_member:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
@@ -40,7 +40,7 @@
     - l3out_logical_interface_vpc_mem
     - aci_l3out_logical_interface_vpc_member
 
-- name: " Résumé L3Out Logical Interface VPC Members"
+- name: " Summary L3Out Logical Interface VPC Members"
   debug:
-    msg: " {{ l3out_logical_interface_vpc_mem_csv.list | length }} L3Out Logical Interface VPC Members créés"
+    msg: " {{ l3out_logical_interface_vpc_mem_csv.list | length }} L3Out Logical Interface VPC Members created"
   when: l3out_logical_interface_vpc_mem_csv is defined and l3out_logical_interface_vpc_mem_csv.list | length > 0

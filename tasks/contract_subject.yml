@@ -6,12 +6,12 @@
   register: contract_subject_csv
   when: (csv_dir + '/contract_subject.csv') is file
 
-- name: "Afficher les Contract Subject détectés"
+- name: "Display detected Contract Subject "
   debug:
-    msg: "Contract Subject à traiter: {{ contract_subject_csv.list | map(attribute='subject') | list }}"
+    msg: "Contract Subject to process: {{ contract_subject_csv.list | map(attribute='subject') | list }}"
   when: contract_subject_csv is defined and contract_subject_csv.list is defined
 
-- name: "{{ item.subject }} - Créer les Subjects ACI"
+- name: "Create Contract Subject"
   cisco.aci.aci_contract_subject:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

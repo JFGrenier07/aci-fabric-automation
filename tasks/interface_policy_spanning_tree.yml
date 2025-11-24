@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les policies Spanning Tree avec read_csv
+# Tasks to manage policies Spanning Tree with read_csv
 - name: "Read CSV Spanning Tree Policies"
   read_csv:
     path: "{{ csv_dir }}/interface_policy_spanning_tree.csv"
@@ -7,12 +7,12 @@
   register: stp_policy_csv
   when: (csv_dir + '/interface_policy_spanning_tree.csv') is file
 
-- name: "Afficher les policies Spanning Tree détectées"
+- name: "Display detected policies Spanning Tree "
   debug:
-    msg: "Policies Spanning Tree à traiter: {{ stp_policy_csv.list | map(attribute='stp_policy') | list }}"
+    msg: "Policies Spanning Tree to process: {{ stp_policy_csv.list | map(attribute='stp_policy') | list }}"
   when: stp_policy_csv is defined and stp_policy_csv.list is defined
 
-- name: "{{ item.stp_policy }} - Manage spanning tree interface policies (stp:IfPol)"
+- name: "Manage Spanning Tree Policy"
   cisco.aci.aci_interface_policy_spanning_tree:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

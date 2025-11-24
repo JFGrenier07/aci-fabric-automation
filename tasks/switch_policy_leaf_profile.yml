@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les switch policy leaf profiles avec read_csv
+# Tasks to manage switch policy leaf profiles avec read_csv
 - name: "Read CSV Switch Policy Leaf Profiles"
   read_csv:
     path: "{{ csv_dir }}/switch_policy_leaf_profile.csv"
@@ -7,12 +7,12 @@
   register: switch_policy_leaf_profile_csv
   when: (csv_dir + '/switch_policy_leaf_profile.csv') is file
 
-- name: "Afficher les Switch Policy Leaf Profiles détectés"
+- name: "Display detected Switch Policy Leaf Profiles "
   debug:
-    msg: "Switch Policy Leaf Profiles à traiter: {{ switch_policy_leaf_profile_csv.list | map(attribute='leaf_profile') | list }}"
+    msg: "Switch Policy Leaf Profiles to process: {{ switch_policy_leaf_profile_csv.list | map(attribute='leaf_profile') | list }}"
   when: switch_policy_leaf_profile_csv is defined and switch_policy_leaf_profile_csv.list is defined
 
-- name: "{{ item.leaf_profile }} - Créer le Switch Policy Leaf Profile"
+- name: "Create Switch Policy Leaf Profile"
   cisco.aci.aci_switch_policy_leaf_profile:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"

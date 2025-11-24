@@ -1,5 +1,5 @@
 ---
-# Tâches pour gérer les associations EPG-Contract avec read_csv
+# Tasks to manage associations EPG-Contract with read_csv
 - name: "Read CSV EPG to Contract"
   read_csv:
     path: "{{ csv_dir }}/epg_to_contract.csv"
@@ -7,12 +7,12 @@
   register: epg_to_contract_csv
   when: (csv_dir + '/epg_to_contract.csv') is file
 
-- name: "Afficher les associations EPG-Contract détectées"
+- name: "Display detected associations EPG-Contract "
   debug:
-    msg: "Associations EPG-Contract à traiter: {{ epg_to_contract_csv.list | map(attribute='epg') | list }}"
+    msg: "Associations EPG-Contract to process: {{ epg_to_contract_csv.list | map(attribute='epg') | list }}"
   when: epg_to_contract_csv is defined and epg_to_contract_csv.list is defined
 
-- name: "{{ item.epg }}-{{ item.contract }} - Associer EPG au Contract ACI"
+- name: "Associate EPG to Contract"
   cisco.aci.aci_epg_to_contract:
     host: "{{ aci_hostname }}"
     username: "{{ aci_username }}"
