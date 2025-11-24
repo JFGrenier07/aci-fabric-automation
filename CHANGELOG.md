@@ -11,6 +11,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release preparation
 - Comprehensive documentation suite
 
+## [2.1.0] - 2024-11-24
+
+### Fixed
+- **LLDP Warning Resolution**: Fixed 'item' is undefined warning in interface_policy_lldp.yml
+  - Removed trailing space from CSV column reference (lldp_policy )
+  - Changed task name from dynamic to static to prevent Jinja2 template errors
+  - Updated all references from item['lldp_policy '] to item.lldp_policy
+- **CDP Boolean Handling**: Fixed admin_state empty string error in interface_policy_cdp.yml
+  - Added fallback with omit when admin_state is empty
+  - Prevents "unable to convert to bool" errors
+- **Route Control State Parameters**: Commented out state parameters in 4 route control task files
+  - tasks/match_rule.yml
+  - tasks/match_route_destination.yml
+  - tasks/route_control_profile.yml
+  - tasks/route_control_context.yml
+  - Tasks now use default behavior (state=present)
+- **Parameter Optimization**: Commented out 106+ unused parameters across 44 task files
+  - Ensured all task parameters align with CSV column definitions
+  - Prevents "undefined variable" errors during deployment
+
+### Security
+- **Credential Management Enhancement**: Modified excel_to_csv_simple.py to generate inventory.yml with placeholders
+  - Removed hardcoded credentials from generated deployment directories
+  - New placeholders: YOUR_APIC_IP_HERE, YOUR_USERNAME_HERE, YOUR_PASSWORD_HERE
+  - Added warning comment for users to fill credentials before deployment
+  - Updated inventory.yml generation to always use secure placeholders
+
+### Changed
+- **Repository Structure Cleanup**: Removed auto-generated files from version control
+  - Removed csv/ directory (created automatically during execution)
+  - Removed logs/ directory (created automatically during execution)
+  - Removed ansible.cfg (generated automatically by excel_to_csv_simple.py)
+  - Removed inventory.yml (generated automatically by excel_to_csv_simple.py)
+  - Cleaner repository with only source files tracked
+- **Configuration Generation**: All configuration files now generated at runtime
+  - ansible.cfg generated with optimized settings
+  - inventory.yml generated with secure placeholders
+  - CSV files generated from Excel source
+  - Dynamic directory creation as needed
+
+### Testing
+- Full playbook deployment tested successfully
+- Results: ok=217, changed=47, failed=0
+- No warnings detected
+- All 53 ACI modules working correctly including route control modules
+
 ## [2.0.0] - 2024-01-15
 
 ### Added

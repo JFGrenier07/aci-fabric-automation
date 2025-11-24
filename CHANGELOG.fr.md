@@ -11,6 +11,52 @@ et ce projet adhère au [Versioning Sémantique](https://semver.org/spec/v2.0.0.
 - Préparation release initiale
 - Suite documentation complète
 
+## [2.1.0] - 2024-11-24
+
+### Corrigé
+- **Résolution Avertissements LLDP** : Corrigé avertissement 'item' non défini dans interface_policy_lldp.yml
+  - Supprimé espace final de référence colonne CSV (lldp_policy )
+  - Changé nom tâche de dynamique à statique pour éviter erreurs template Jinja2
+  - Mis à jour toutes références de item['lldp_policy '] vers item.lldp_policy
+- **Gestion Booléens CDP** : Corrigé erreur chaîne vide admin_state dans interface_policy_cdp.yml
+  - Ajouté fallback avec omit quand admin_state est vide
+  - Prévient erreurs "impossible de convertir en bool"
+- **Paramètres State Route Control** : Commenté paramètres state dans 4 fichiers tâches route control
+  - tasks/match_rule.yml
+  - tasks/match_route_destination.yml
+  - tasks/route_control_profile.yml
+  - tasks/route_control_context.yml
+  - Tâches utilisent maintenant comportement par défaut (state=present)
+- **Optimisation Paramètres** : Commenté 106+ paramètres inutilisés dans 44 fichiers tâches
+  - Assure alignement paramètres tâches avec définitions colonnes CSV
+  - Prévient erreurs "variable non définie" durant déploiement
+
+### Sécurité
+- **Amélioration Gestion Identifiants** : Modifié excel_to_csv_simple.py pour générer inventory.yml avec placeholders
+  - Supprimé identifiants codés en dur des répertoires déploiement générés
+  - Nouveaux placeholders: YOUR_APIC_IP_HERE, YOUR_USERNAME_HERE, YOUR_PASSWORD_HERE
+  - Ajouté commentaire avertissement pour remplir identifiants avant déploiement
+  - Génération inventory.yml utilise maintenant toujours placeholders sécurisés
+
+### Modifié
+- **Nettoyage Structure Dépôt** : Supprimé fichiers auto-générés du contrôle version
+  - Supprimé répertoire csv/ (créé automatiquement durant exécution)
+  - Supprimé répertoire logs/ (créé automatiquement durant exécution)
+  - Supprimé ansible.cfg (généré automatiquement par excel_to_csv_simple.py)
+  - Supprimé inventory.yml (généré automatiquement par excel_to_csv_simple.py)
+  - Dépôt plus propre avec seulement fichiers source suivis
+- **Génération Configuration** : Tous fichiers configuration maintenant générés à l'exécution
+  - ansible.cfg généré avec paramètres optimisés
+  - inventory.yml généré avec placeholders sécurisés
+  - Fichiers CSV générés depuis source Excel
+  - Création répertoires dynamique au besoin
+
+### Tests
+- Déploiement playbook complet testé avec succès
+- Résultats: ok=217, changed=47, failed=0
+- Aucun avertissement détecté
+- Tous les 53 modules ACI fonctionnent correctement incluant modules route control
+
 ## [2.0.0] - 2024-01-15
 
 ### Ajouté
