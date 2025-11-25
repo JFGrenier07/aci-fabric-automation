@@ -73,6 +73,9 @@ class ExcelToCSVSimple:
                 print(f"⚠️ Onglet '{sheet_name}' vide")
                 return False
 
+            # Nettoyer les noms de colonnes (supprimer espaces de début/fin)
+            df.columns = df.columns.str.strip()
+
             # Nom de fichier CSV
             csv_filename = f"{sheet_name}.csv"
             csv_path = self.csv_dir / csv_filename
