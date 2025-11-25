@@ -32,7 +32,7 @@
     mode: "{{ item.mode | default('regular') }}"
     address: "{{ item.address | default(omit) }}"
     mtu: "{{ item.mtu | default('inherit') }}"
-    description: "{{ item.description | default(omit) }}"
+    # description: "{{ item.description | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_interface_csv.list }}"
   when:
