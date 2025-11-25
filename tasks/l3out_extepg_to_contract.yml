@@ -25,7 +25,7 @@
     extepg: "{{ item.extepg }}"
     contract: "{{ item.contract }}"
     contract_type: "{{ item.contract_type | default('provider') }}"
-    # state: "{{ item.state | default(global_state) }}"
+    state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_extepg_to_contract_csv.list }}"
   when:
     - l3out_extepg_to_contract_csv is defined
