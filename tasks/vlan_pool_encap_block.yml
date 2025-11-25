@@ -25,7 +25,7 @@
     block_name: "{{ item.pool }}"
     block_start: "{{ item.block_start }}"
     block_end: "{{ item.block_end }}"
-    allocation_mode: "{{ item.allocation_mode | default('inherit') }}"
+    # allocation_mode: "{{ item.allocation_mode | default('inherit') }}"
     description: "{{ item.description | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ vlan_pool_encap_block_csv.list }}"

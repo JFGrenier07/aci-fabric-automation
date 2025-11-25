@@ -24,10 +24,10 @@
     bd: "{{ item.bd }}"
     gateway: "{{ item.gateway }}"
     mask: "{{ item.mask | default(24) }}"
-    subnet_name: "{{ item.subnet_name | default(omit) }}"
+    # subnet_name: "{{ item.subnet_name | default(omit) }}"
     description: "{{ item.description | default(omit) }}"
     scope: "{{ item.scope | default(['private']) }}"
-    ip_data_plane_learning: "{{ item.ip_data_plane_learning | default('enabled') }}"
+    # ip_data_plane_learning: "{{ item.ip_data_plane_learning | default('enabled') }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ bd_subnet_csv.list }}"
   when: 

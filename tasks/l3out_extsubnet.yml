@@ -27,7 +27,7 @@
     subnet_name: "{{ item.subnet_name | default(omit) }}"
     description: "{{ item.description | default(omit) }}"
     scope: "{{ item.scope | default(['import-security']) }}"
-    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    # name_alias: "{{ item.tenant_alias | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_extsubnet_csv.list }}"
   when:

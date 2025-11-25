@@ -23,7 +23,7 @@
     tenant: "{{ item.tenant }}"
     ap: "{{ item.ap }}"
     description: "{{ item.description | default(omit) }}"
-    monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
+    # monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ ap_csv.list }}"
   when: 

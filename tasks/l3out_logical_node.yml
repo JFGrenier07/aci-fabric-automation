@@ -28,8 +28,8 @@
     router_id: "{{ item.router_id | default(omit) }}"
     router_id_as_loopback: "{{ item.router_id_as_loopback | default('yes') }}"
     loopback_address: "{{ item.loopback_address | default(omit) }}"
-    mpls_transport_loopback_address: "{{ item.mpls_transport_loopback_address | default(omit) }}"
-    sid: "{{ item.sid | default(omit) }}"
+    # mpls_transport_loopback_address: "{{ item.mpls_transport_loopback_address | default(omit) }}"
+    # sid: "{{ item.sid | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_logical_node_csv.list }}"
   when:

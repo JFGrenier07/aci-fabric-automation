@@ -24,8 +24,8 @@
     contract: "{{ item.contract }}"
     description: "{{ item.description | default(omit) }}"
     scope: "{{ item.scope | default('context') }}"
-    priority: "{{ item.priority | default('unspecified') }}"
-    dscp: "{{ item.dscp | default('unspecified') }}"
+    # priority: "{{ item.priority | default('unspecified') }}"
+    # dscp: "{{ item.dscp | default('unspecified') }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ contract_csv.list }}"
   when: 

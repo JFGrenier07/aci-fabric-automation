@@ -31,7 +31,7 @@
     encap: "{{ item.encap | default(omit) }}"
     encap_scope: "{{ item.encap_scope | default('local') if item.encap_scope and item.encap_scope | length > 0 else 'local' }}"
     address: "{{ item.address | default(omit) }}"
-    mac_address: "{{ item.mac_address | default(omit) }}"
+    # mac_address: "{{ item.mac_address | default(omit) }}"
     mtu: "{{ item.mtu | default(omit) }}"
     mode: "{{ item.mode | default('regular') }}"
     auto_state: "{{ item.auto_state | default('enabled') }}"

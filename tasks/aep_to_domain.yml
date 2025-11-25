@@ -23,7 +23,7 @@
     aep: "{{ item.aep }}"
     domain: "{{ item.domain }}"
     domain_type: "{{ item.domain_type }}"
-    vm_provider: "{{ item.vm_provider | default(omit) }}"
+    # vm_provider: "{{ item.vm_provider | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ aep_to_domain_csv.list }}"
   when: 

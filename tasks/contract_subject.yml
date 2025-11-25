@@ -24,8 +24,8 @@
     subject: "{{ item.subject }}"
     description: "{{ item.description | default(omit) }}"
     reverse_filter: "{{ item.reverse_filter | default(true) }}"
-    priority: "{{ item.priority | default('unspecified') }}"
-    dscp: "{{ item.dscp | default('unspecified') }}"
+    # priority: "{{ item.priority | default('unspecified') }}"
+    # dscp: "{{ item.dscp | default('unspecified') }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ contract_subject_csv.list }}"
   when:

@@ -33,8 +33,8 @@
     
     # Configuration optionnelle
     policy_group: "{{ item.policy_group | default(omit) }}"
-    breakout: "{{ item.breakout | default(omit) }}"
-    pc_member: "{{ item.pc_member | default(omit) }}"
+    # breakout: "{{ item.breakout | default(omit) }}"
+    # pc_member: "{{ item.pc_member | default(omit) }}"
     description: "{{ item.description | default('') }}"
     
     # Ãtat global

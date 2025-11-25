@@ -25,7 +25,7 @@
     epg: "{{ item.epg }}"
     contract: "{{ item.contract }}"
     contract_type: "{{ item.contract_type }}"
-    priority: "{{ item.priority | default('unspecified') }}"
+    # priority: "{{ item.priority | default('unspecified') }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ epg_to_contract_csv.list }}"
   when: 

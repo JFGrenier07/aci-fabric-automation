@@ -37,16 +37,16 @@
     port_channel_policy: "{{ item.port_channel_policy if (item.lag_type in ['link', 'node'] and item.port_channel_policy) else omit }}"
     
     # Policies avancÃ©es optionnelles
-    monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
-    storm_control_interface_policy: "{{ item.storm_control_interface_policy | default(omit) }}"
+    # monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
+    # storm_control_interface_policy: "{{ item.storm_control_interface_policy | default(omit) }}"
     l2_interface_policy: "{{ item.l2_interface_policy | default(omit) }}"
-    port_security_policy: "{{ item.port_security_policy | default(omit) }}"
-    link_flap_policy: "{{ item.link_flap_policy | default(omit) }}"
-    fibre_channel_interface_policy: "{{ item.fibre_channel_interface_policy | default(omit) }}"
-    slow_drain_policy: "{{ item.slow_drain_policy | default(omit) }}"
-    priority_flow_control_policy: "{{ item.priority_flow_control_policy | default(omit) }}"
-    egress_data_plane_policing_policy: "{{ item.egress_data_plane_policing_policy | default(omit) }}"
-    ingress_data_plane_policing_policy: "{{ item.ingress_data_plane_policing_policy | default(omit) }}"
+    # port_security_policy: "{{ item.port_security_policy | default(omit) }}"
+    # link_flap_policy: "{{ item.link_flap_policy | default(omit) }}"
+    # fibre_channel_interface_policy: "{{ item.fibre_channel_interface_policy | default(omit) }}"
+    # slow_drain_policy: "{{ item.slow_drain_policy | default(omit) }}"
+    # priority_flow_control_policy: "{{ item.priority_flow_control_policy | default(omit) }}"
+    # egress_data_plane_policing_policy: "{{ item.egress_data_plane_policing_policy | default(omit) }}"
+    # ingress_data_plane_policing_policy: "{{ item.ingress_data_plane_policing_policy | default(omit) }}"
     
     # Ãtat global
     state: "{{ item.state | default(global_state) }}"

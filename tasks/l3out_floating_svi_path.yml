@@ -31,8 +31,8 @@
     domain: "{{ item.domain | default(omit) }}"
     domain_type: "{{ item.domain_type | default(omit) }}"
     floating_ip: "{{ item.floating_ip | default(omit) }}"
-    path_type: "{{ item.path_type | default(omit) }}"
-    description: "{{ item.description | default(omit) }}"
+    # path_type: "{{ item.path_type | default(omit) }}"
+    # description: "{{ item.description | default(omit) }}"
     
     state: "{{ deployment_state | default('present') }}"
   loop: "{{ l3out_floating_svi_path_csv.list }}"

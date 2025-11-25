@@ -24,7 +24,7 @@
     ap: "{{ item.ap }}"
     epg: "{{ item.epg }}"
     encap: "{{ item.encap | default(omit) }}"
-    primary_encap: "{{ item.primary_encap_id | default(omit) }}"
+    # primary_encap: "{{ item.primary_encap_id | default(omit) }}"
     interface_mode: "{{ item.interface_mode | default('trunk') }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ aep_to_epg_csv.list }}"

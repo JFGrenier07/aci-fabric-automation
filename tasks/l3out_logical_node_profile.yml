@@ -24,9 +24,9 @@
     l3out: "{{ item.l3out }}"
     node_profile: "{{ item.node_profile }}"
     description: "{{ item.description | default(omit) }}"
-    dscp: "{{ item.dscp | default('unspecified') }}"
-    mpls_custom_qos_policy: "{{ item.mpls_custom_qos_policy | default(omit) }}"
-    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    # dscp: "{{ item.dscp | default('unspecified') }}"
+    # mpls_custom_qos_policy: "{{ item.mpls_custom_qos_policy | default(omit) }}"
+    # name_alias: "{{ item.tenant_alias | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_logical_node_profile_csv.list }}"
   when:

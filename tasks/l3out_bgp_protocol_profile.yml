@@ -24,8 +24,8 @@
     l3out: "{{ item.l3out }}"
     node_profile: "{{ item.node_profile }}"
     bgp_timers_policy: "{{ item.bgp_timers_policy | default(omit) }}"
-    bgp_best_path_policy: "{{ item.bgp_best_path_policy | default(omit) }}"
-    name_alias: "{{ item.tenant_alias | default(omit) }}"
+    # bgp_best_path_policy: "{{ item.bgp_best_path_policy | default(omit) }}"
+    # name_alias: "{{ item.tenant_alias | default(omit) }}"
     state: "{{ item.state | default(global_state) }}"
   loop: "{{ l3out_bgp_protocol_profile_csv.list }}"
   when:
