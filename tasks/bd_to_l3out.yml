@@ -23,7 +23,7 @@
     tenant: "{{ item.tenant }}"
     bd: "{{ item.bridge_domain }}"
     l3out: "{{ item.l3out }}"
-    state: "{{ item.state | default(global_state) }}"
+    # state: "{{ item.state | default(global_state) }}"
   loop: "{{ bd_to_l3out_csv.list }}"
   when:
     - bd_to_l3out_csv is defined
