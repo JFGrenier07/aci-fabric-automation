@@ -51,7 +51,7 @@ graph TB
 
 ## 🔧 Component Architecture
 
-### 1. Excel Parser Engine (`excel_to_csv_simple.py`)
+### 1. Excel Parser Engine (`excel_to_csv.py`)
 
 **Purpose**: Intelligent extraction and transformation of Excel-based configurations
 
@@ -283,7 +283,7 @@ Application Logs → Ansible Logs → Structured Output → Analysis Dashboard
 
 **Step 2**: Update parser
 ```python
-# Add to module_order in excel_to_csv_simple.py
+# Add to module_order in excel_to_csv.py
 module_order = [
     # ... existing modules
     'aci_new_object',
@@ -309,7 +309,7 @@ The system supports plugins for:
 ### Code Organization
 ```
 production_ready/
-├── excel_to_csv_simple.py    # Core parsing engine
+├── excel_to_csv.py    # Core parsing engine
 ├── tasks/                    # ACI object handlers
 ├── csv/                     # Generated data files
 ├── logs/                    # Operation logs

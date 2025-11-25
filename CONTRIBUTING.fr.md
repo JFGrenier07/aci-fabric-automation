@@ -126,7 +126,7 @@ git checkout -b docs/ameliorer-readme
 
 ```bash
 # Faire vos modifications
-vim excel_to_csv_simple.py
+vim excel_to_csv.py
 
 # Exécuter tests
 pytest tests/
@@ -137,7 +137,7 @@ flake8 .
 isort .
 
 # Tester vos modifications
-python3 excel_to_csv_simple.py config_test.xlsx
+python3 excel_to_csv.py config_test.xlsx
 ansible-playbook --syntax-check config_test.yml
 ```
 
@@ -192,7 +192,7 @@ tests/
 ```python
 # tests/unit/test_parser.py
 import pytest
-from excel_to_csv_simple import ExcelToCSVSimple
+from excel_to_csv import ExcelToCSVSimple
 
 
 class TestExcelParser:
@@ -222,7 +222,7 @@ class TestExcelParser:
 pytest
 
 # Exécuter avec couverture
-pytest --cov=excel_to_csv_simple
+pytest --cov=excel_to_csv
 
 # Exécuter fichier test spécifique
 pytest tests/unit/test_parser.py
@@ -278,7 +278,7 @@ Créer `tasks/nouvel_objet.yml` :
 
 ### 2. Mettre à Jour Analyseur
 
-Ajouter à `excel_to_csv_simple.py` :
+Ajouter à `excel_to_csv.py` :
 ```python
 # Ajouter à liste ordre_modules en position dépendance correcte
 ordre_modules = [

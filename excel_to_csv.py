@@ -178,7 +178,7 @@ class ExcelToCSVSimple:
 
         with open(detected_file, 'w') as f:
             f.write("# Modules ACI détectés depuis les fichiers CSV\n")
-            f.write("# Généré automatiquement par excel_to_csv_simple.py\n")
+            f.write("# Généré automatiquement par excel_to_csv.py\n")
             f.write("detected_modules:\n")
             for module in sorted(detected_modules):
                 f.write(f"- {module}\n")
@@ -471,7 +471,7 @@ def main():
     # Vérifier les paramètres - OBLIGATOIRE pour la sécurité
     if len(sys.argv) < 2:
         print("❌ ERREUR: Fichier Excel obligatoire pour éviter les déploiements accidentels")
-        print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
+        print("💡 Usage: python3 excel_to_csv.py fichier.xlsx")
         print("🔒 Sécurité: Aucun fichier par défaut pour éviter les catastrophes")
         return
 
@@ -481,7 +481,7 @@ def main():
     # Vérifier que le fichier Excel existe
     if not os.path.exists(excel_file):
         print(f"❌ Fichier Excel non trouvé: {excel_file}")
-        print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
+        print("💡 Usage: python3 excel_to_csv.py fichier.xlsx")
         print("🔍 Vérifiez que le fichier existe dans le répertoire courant")
         return
 

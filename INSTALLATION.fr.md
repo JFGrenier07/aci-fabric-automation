@@ -188,7 +188,7 @@ COPY . .
 # Créer répertoires
 RUN mkdir -p logs csv
 
-ENTRYPOINT ["python3", "excel_to_csv_simple.py"]
+ENTRYPOINT ["python3", "excel_to_csv.py"]
 EOF
 
 # Construire conteneur
@@ -333,7 +333,7 @@ ansible --version
 ansible-galaxy collection list | grep cisco.aci
 
 # Tester syntaxe script
-python3 excel_to_csv_simple.py --help
+python3 excel_to_csv.py --help
 ```
 
 ### 2. Test Connectivité
@@ -350,7 +350,7 @@ ansible-doc cisco.aci.aci_tenant
 
 ```bash
 # Tester avec fichier Excel exemple
-python3 excel_to_csv_simple.py aci_fabric_config.xlsx
+python3 excel_to_csv.py aci_fabric_config.xlsx
 
 # Vérifier génération CSV
 ls -la csv/
@@ -400,7 +400,7 @@ ansible-galaxy collection list --format json | jq '.cisco.aci'
 # Erreur : Permission refusée
 # Solution : Corriger propriété
 sudo chown -R $USER:$USER aci-fabric-automation/
-chmod +x excel_to_csv_simple.py
+chmod +x excel_to_csv.py
 ```
 
 ### Problèmes Spécifiques Environnement

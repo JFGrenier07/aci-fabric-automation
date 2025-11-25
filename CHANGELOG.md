@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prevents "undefined variable" errors during deployment
 
 ### Security
-- **Credential Management Enhancement**: Modified excel_to_csv_simple.py to generate inventory.yml with placeholders
+- **Credential Management Enhancement**: Modified excel_to_csv.py to generate inventory.yml with placeholders
   - Removed hardcoded credentials from generated deployment directories
   - New placeholders: YOUR_APIC_IP_HERE, YOUR_USERNAME_HERE, YOUR_PASSWORD_HERE
   - Added warning comment for users to fill credentials before deployment
@@ -42,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Repository Structure Cleanup**: Removed auto-generated files from version control
   - Removed csv/ directory (created automatically during execution)
   - Removed logs/ directory (created automatically during execution)
-  - Removed ansible.cfg (generated automatically by excel_to_csv_simple.py)
-  - Removed inventory.yml (generated automatically by excel_to_csv_simple.py)
+  - Removed ansible.cfg (generated automatically by excel_to_csv.py)
+  - Removed inventory.yml (generated automatically by excel_to_csv.py)
   - Cleaner repository with only source files tracked
 - **Configuration Generation**: All configuration files now generated at runtime
   - ansible.cfg generated with optimized settings
@@ -203,7 +203,7 @@ cp .env.example .env
 # Ensure sheet names match exactly (case-sensitive)
 
 # 3. Test new dynamic playbooks
-python3 excel_to_csv_simple.py your_config.xlsx
+python3 excel_to_csv.py your_config.xlsx
 ansible-playbook --syntax-check your_config.yml
 ```
 

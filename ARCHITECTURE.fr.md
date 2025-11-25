@@ -51,7 +51,7 @@ graph TB
 
 ## 🔧 Architecture des Composants
 
-### 1. Moteur Analyseur Excel (`excel_to_csv_simple.py`)
+### 1. Moteur Analyseur Excel (`excel_to_csv.py`)
 
 **Objectif** : Extraction et transformation intelligentes des configurations basées sur Excel
 
@@ -283,7 +283,7 @@ Logs Application → Logs Ansible → Sortie Structurée → Tableau Analyse
 
 **Étape 2** : Mettre à jour analyseur
 ```python
-# Ajouter à ordre_modules dans excel_to_csv_simple.py
+# Ajouter à ordre_modules dans excel_to_csv.py
 ordre_modules = [
     # ... modules existants
     'aci_nouvel_objet',
@@ -309,7 +309,7 @@ Le système supporte plugins pour :
 ### Organisation Code
 ```
 production_ready/
-├── excel_to_csv_simple.py    # Moteur analyse principal
+├── excel_to_csv.py    # Moteur analyse principal
 ├── tasks/                    # Gestionnaires objets ACI
 ├── csv/                     # Fichiers données générés
 ├── logs/                    # Logs opération

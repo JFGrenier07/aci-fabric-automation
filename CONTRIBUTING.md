@@ -126,7 +126,7 @@ git checkout -b docs/improve-readme
 
 ```bash
 # Make your changes
-vim excel_to_csv_simple.py
+vim excel_to_csv.py
 
 # Run tests
 pytest tests/
@@ -137,7 +137,7 @@ flake8 .
 isort .
 
 # Test your changes
-python3 excel_to_csv_simple.py test_config.xlsx
+python3 excel_to_csv.py test_config.xlsx
 ansible-playbook --syntax-check test_config.yml
 ```
 
@@ -192,7 +192,7 @@ tests/
 ```python
 # tests/unit/test_parser.py
 import pytest
-from excel_to_csv_simple import ExcelToCSVSimple
+from excel_to_csv import ExcelToCSVSimple
 
 
 class TestExcelParser:
@@ -222,7 +222,7 @@ class TestExcelParser:
 pytest
 
 # Run with coverage
-pytest --cov=excel_to_csv_simple
+pytest --cov=excel_to_csv
 
 # Run specific test file
 pytest tests/unit/test_parser.py
@@ -278,7 +278,7 @@ Create `tasks/new_object.yml`:
 
 ### 2. Update Parser
 
-Add to `excel_to_csv_simple.py`:
+Add to `excel_to_csv.py`:
 ```python
 # Add to module_order list in correct dependency position
 module_order = [

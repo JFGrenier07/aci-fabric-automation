@@ -104,7 +104,7 @@ cp .env.example .env
 vim .env
 
 # 3. Convertir Excel en configuration prête pour déploiement
-python3 excel_to_csv_simple.py aci_fabric_config.xlsx
+python3 excel_to_csv.py aci_fabric_config.xlsx
 
 # 4. Déployer sur le fabric ACI
 ansible-playbook -i inventory.yml aci_fabric_config.yml
@@ -146,7 +146,7 @@ ansible-playbook -i inventory.yml aci_fabric_config.yml
 
 5. **Vérifier l'installation**
    ```bash
-   python3 excel_to_csv_simple.py --help
+   python3 excel_to_csv.py --help
    ansible --version
    ```
 
@@ -172,7 +172,7 @@ Development,Environnement développement
 #### Étape 2 : Générer la Configuration
 ```bash
 # Convertir Excel au format prêt pour Ansible
-python3 excel_to_csv_simple.py votre_conception_fabric.xlsx
+python3 excel_to_csv.py votre_conception_fabric.xlsx
 
 # Ceci crée :
 # - répertoire csv/ avec fichiers d'objets individuels
@@ -498,7 +498,7 @@ App_EPG,MonTenant,MonApp_AP,App_BD,Serveurs application
 
 **Déploiement :**
 ```bash
-python3 excel_to_csv_simple.py config_tenant.xlsx
+python3 excel_to_csv.py config_tenant.xlsx
 ansible-playbook -i inventory.yml config_tenant.yml --tags "tenants"
 ```
 
@@ -521,7 +521,7 @@ Server_AEP,Profil connectivité serveur
 
 **Déploiement :**
 ```bash
-python3 excel_to_csv_simple.py config_infra.xlsx
+python3 excel_to_csv.py config_infra.xlsx
 ansible-playbook -i inventory.yml config_infra.yml --tags "infrastructure"
 ```
 
@@ -546,7 +546,7 @@ App_EPG,MonTenant,MonApp_AP,Web_Contract,consumer
 
 **Déploiement :**
 ```bash
-python3 excel_to_csv_simple.py config_securite.xlsx
+python3 excel_to_csv.py config_securite.xlsx
 ansible-playbook -i inventory.yml config_securite.yml --tags "security"
 ```
 
@@ -656,7 +656,7 @@ Nous accueillons les contributions pour améliorer le Moteur d'Automatisation AC
 Pour ajouter support pour un nouveau type d'objet ACI :
 
 1. **Créer Fichier Tâche** : Ajouter `tasks/nouvel_objet.yml`
-2. **Mettre à Jour Analyseur** : Ajouter objet à l'ordre modules dans `excel_to_csv_simple.py`
+2. **Mettre à Jour Analyseur** : Ajouter objet à l'ordre modules dans `excel_to_csv.py`
 3. **Ajouter Modèle** : Documenter structure feuille Excel dans README
 4. **Tester** : Vérifier avec données d'exemple
 5. **Documenter** : Mettre à jour liste objets supportés

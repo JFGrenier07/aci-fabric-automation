@@ -32,7 +32,7 @@ et ce projet adhère au [Versioning Sémantique](https://semver.org/spec/v2.0.0.
   - Prévient erreurs "variable non définie" durant déploiement
 
 ### Sécurité
-- **Amélioration Gestion Identifiants** : Modifié excel_to_csv_simple.py pour générer inventory.yml avec placeholders
+- **Amélioration Gestion Identifiants** : Modifié excel_to_csv.py pour générer inventory.yml avec placeholders
   - Supprimé identifiants codés en dur des répertoires déploiement générés
   - Nouveaux placeholders: YOUR_APIC_IP_HERE, YOUR_USERNAME_HERE, YOUR_PASSWORD_HERE
   - Ajouté commentaire avertissement pour remplir identifiants avant déploiement
@@ -42,8 +42,8 @@ et ce projet adhère au [Versioning Sémantique](https://semver.org/spec/v2.0.0.
 - **Nettoyage Structure Dépôt** : Supprimé fichiers auto-générés du contrôle version
   - Supprimé répertoire csv/ (créé automatiquement durant exécution)
   - Supprimé répertoire logs/ (créé automatiquement durant exécution)
-  - Supprimé ansible.cfg (généré automatiquement par excel_to_csv_simple.py)
-  - Supprimé inventory.yml (généré automatiquement par excel_to_csv_simple.py)
+  - Supprimé ansible.cfg (généré automatiquement par excel_to_csv.py)
+  - Supprimé inventory.yml (généré automatiquement par excel_to_csv.py)
   - Dépôt plus propre avec seulement fichiers source suivis
 - **Génération Configuration** : Tous fichiers configuration maintenant générés à l'exécution
   - ansible.cfg généré avec paramètres optimisés
@@ -203,7 +203,7 @@ cp .env.example .env
 # Assurer noms feuilles correspondent exactement (sensible casse)
 
 # 3. Tester nouveaux playbooks dynamiques
-python3 excel_to_csv_simple.py votre_config.xlsx
+python3 excel_to_csv.py votre_config.xlsx
 ansible-playbook --syntax-check votre_config.yml
 ```
 

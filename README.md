@@ -104,7 +104,7 @@ cp .env.example .env
 vim .env
 
 # 3. Convert Excel to deployment-ready configuration
-python3 excel_to_csv_simple.py aci_fabric_config.xlsx
+python3 excel_to_csv.py aci_fabric_config.xlsx
 
 # 4. Deploy to ACI fabric
 ansible-playbook -i inventory.yml aci_fabric_config.yml
@@ -146,7 +146,7 @@ ansible-playbook -i inventory.yml aci_fabric_config.yml
 
 5. **Verify installation**
    ```bash
-   python3 excel_to_csv_simple.py --help
+   python3 excel_to_csv.py --help
    ansible --version
    ```
 
@@ -172,7 +172,7 @@ Development,Development tenant
 #### Step 2: Generate Configuration
 ```bash
 # Convert Excel to Ansible-ready format
-python3 excel_to_csv_simple.py your_fabric_design.xlsx
+python3 excel_to_csv.py your_fabric_design.xlsx
 
 # This creates:
 # - csv/ directory with individual object files
@@ -498,7 +498,7 @@ App_EPG,MyTenant,MyApp_AP,App_BD,Application servers
 
 **Deployment:**
 ```bash
-python3 excel_to_csv_simple.py tenant_config.xlsx
+python3 excel_to_csv.py tenant_config.xlsx
 ansible-playbook -i inventory.yml tenant_config.yml --tags "tenants"
 ```
 
@@ -521,7 +521,7 @@ Server_AEP,Server connectivity profile
 
 **Deployment:**
 ```bash
-python3 excel_to_csv_simple.py infra_config.xlsx
+python3 excel_to_csv.py infra_config.xlsx
 ansible-playbook -i inventory.yml infra_config.yml --tags "infrastructure"
 ```
 
@@ -546,7 +546,7 @@ App_EPG,MyTenant,MyApp_AP,Web_Contract,consumer
 
 **Deployment:**
 ```bash
-python3 excel_to_csv_simple.py security_config.xlsx
+python3 excel_to_csv.py security_config.xlsx
 ansible-playbook -i inventory.yml security_config.yml --tags "security"
 ```
 
@@ -656,7 +656,7 @@ We welcome contributions to improve the ACI Fabric Automation Engine!
 To add support for a new ACI object type:
 
 1. **Create Task File**: Add `tasks/new_object.yml`
-2. **Update Parser**: Add object to `excel_to_csv_simple.py` module order
+2. **Update Parser**: Add object to `excel_to_csv.py` module order
 3. **Add Template**: Document Excel sheet structure in README
 4. **Test**: Verify with sample data
 5. **Document**: Update supported objects list
