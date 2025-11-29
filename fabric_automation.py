@@ -73,9 +73,6 @@ class ExcelToCSVSimple:
                 print(f"⚠️ Onglet '{sheet_name}' vide")
                 return False
 
-            # Nettoyer les noms de colonnes (supprimer espaces de début/fin)
-            df.columns = df.columns.str.strip()
-
             # Nom de fichier CSV
             csv_filename = f"{sheet_name}.csv"
             csv_path = self.csv_dir / csv_filename
@@ -181,12 +178,15 @@ class ExcelToCSVSimple:
 
         with open(detected_file, 'w') as f:
             f.write("# Modules ACI détectés depuis les fichiers CSV\n")
-            f.write("# Généré automatiquement par excel_to_csv.py\n")
+            f.write("# Généré automatiquement par excel_to_csv_simple.py\n")
             f.write("detected_modules:\n")
             for module in sorted(detected_modules):
                 f.write(f"- {module}\n")
 
         print(f"✅ Liste des modules créée: {detected_file}")
+
+        # Stocker comme attribut d'instance pour utilisation ultérieure
+        self.aci_modules = detected_modules
         return detected_modules
 
     def create_dynamic_playbook(self, excel_file, detected_modules):
@@ -385,7 +385,7 @@ class ExcelToCSVSimple:
 
             playbook_content += f'''
     - name: "Inclure les tâches pour les {description}"
-      include_tasks: ../tasks/{task_name}.yml
+      include_tasks: tasks/{task_name}.yml
       tags:
         - {task_name}
         - {module}'''
@@ -463,6 +463,44 @@ all:
         logs_dir.mkdir(exist_ok=True)
         print(f"✅ Répertoire logs créé: {logs_dir}/")
 
+    def copy_needed_tasks(self):
+        """Copier seulement les tasks nécessaires dans le répertoire de déploiement"""
+        if not self.deployment_dir:
+            return
+        
+        # Créer le répertoire tasks dans le déploiement
+        tasks_dest_dir = self.deployment_dir / 'tasks'
+        tasks_dest_dir.mkdir(exist_ok=True)
+        
+        # Répertoire source des tasks (production_ready ou parent)
+        tasks_source_dir = Path(__file__).parent / 'production_ready' / 'tasks'
+        if not tasks_source_dir.exists():
+            tasks_source_dir = Path(__file__).parent / 'tasks'
+        
+        if not tasks_source_dir.exists():
+            print(f"⚠️  Répertoire tasks source non trouvé")
+            return
+        
+        print(f"\n📁 COPIE DES TASKS NÉCESSAIRES")
+        print("="*60)
+        
+        copied_count = 0
+        # Pour chaque module détecté, copier la task correspondante
+        for module_name in self.aci_modules:
+            # Enlever le préfixe 'aci_' pour trouver le nom de fichier
+            task_name = module_name.replace('aci_', '')
+            task_file = tasks_source_dir / f"{task_name}.yml"
+            
+            if task_file.exists():
+                dest_file = tasks_dest_dir / f"{task_name}.yml"
+                shutil.copy2(task_file, dest_file)
+                print(f"✅ {task_name}.yml")
+                copied_count += 1
+            else:
+                print(f"⚠️  {task_name}.yml (fichier non trouvé)")
+        
+        print(f"\n✅ {copied_count} fichiers tasks copiés vers {tasks_dest_dir}/")
+
 def main():
     """Fonction principale"""
     import sys
@@ -474,7 +512,7 @@ def main():
     # Vérifier les paramètres - OBLIGATOIRE pour la sécurité
     if len(sys.argv) < 2:
         print("❌ ERREUR: Fichier Excel obligatoire pour éviter les déploiements accidentels")
-        print("💡 Usage: python3 excel_to_csv.py fichier.xlsx")
+        print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
         print("🔒 Sécurité: Aucun fichier par défaut pour éviter les catastrophes")
         return
 
@@ -484,7 +522,7 @@ def main():
     # Vérifier que le fichier Excel existe
     if not os.path.exists(excel_file):
         print(f"❌ Fichier Excel non trouvé: {excel_file}")
-        print("💡 Usage: python3 excel_to_csv.py fichier.xlsx")
+        print("💡 Usage: python3 excel_to_csv_simple.py fichier.xlsx")
         print("🔍 Vérifiez que le fichier existe dans le répertoire courant")
         return
 
@@ -524,6 +562,7 @@ def main():
     # Copier les fichiers de configuration Ansible
     exporter.copy_ansible_config_files()
 
+    exporter.copy_needed_tasks()
     print(f"\n{'='*60}")
     print("🎯 DÉPLOIEMENT PRÊT!")
     print(f"{'='*60}")
@@ -533,11 +572,12 @@ def main():
     print(f"   ├── {excel_name}.yml        (Playbook Ansible)")
     print(f"   ├── ansible.cfg             (Configuration Ansible)")
     print(f"   ├── inventory.yml           (Inventaire)")
+    print(f"   ├── tasks/                  (Tâches Ansible)")
     print(f"   └── detected_modules_csv.yml")
     print(f"\n🚀 Pour déployer:")
     print(f"   cd {deployment_dir}/")
     print(f"   ansible-playbook {excel_name}.yml -i inventory.yml")
-    print(f"\n💡 Les tasks restent partagées dans ../tasks/")
+    print(f"\n💡 Répertoire AUTONOME avec tasks incluses")
 
 if __name__ == "__main__":
     main()

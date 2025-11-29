@@ -1,502 +1,640 @@
 # 📦 Installation Guide
 
-This guide provides comprehensive installation instructions for the ACI Fabric Automation Engine across different environments.
+Complete installation guide for the ACI Fabric Automation Engine.
 
-## 🔧 System Requirements
+## 📋 Table of Contents
 
-### Minimum Requirements
-- **Operating System**: Linux (Ubuntu 18.04+, RHEL 7+, CentOS 7+), macOS 10.15+, or Windows 10 with WSL2
-- **Python**: 3.8 or higher
-- **Memory**: 2GB RAM (4GB+ recommended for large configurations)
-- **Storage**: 1GB free disk space
-- **Network**: Direct connectivity to APIC management interface
+- [System Requirements](#system-requirements)
+- [Quick Installation](#quick-installation)
+- [Detailed Installation](#detailed-installation)
+- [Verification](#verification)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
 
-### Recommended Requirements
-- **Python**: 3.9+ for optimal performance
-- **Memory**: 8GB RAM for enterprise deployments
-- **CPU**: 4+ cores for parallel execution
-- **Network**: Low-latency connection to APIC (< 50ms)
+## 🖥️ System Requirements
 
-## 🐧 Linux Installation
+### Operating System
+- **Linux**: Ubuntu 20.04+, CentOS 8+, RHEL 8+, Debian 10+
+- **macOS**: 10.15 (Catalina) or newer
+- **Windows**: Windows 10/11 with WSL2 (Ubuntu recommended)
 
-### Ubuntu/Debian
+### Software Requirements
+
+| Component | Minimum Version | Recommended Version |
+|-----------|----------------|---------------------|
+| Python | 3.8 | 3.10+ |
+| pip | 20.0 | Latest |
+| Ansible | 2.12 | 2.15+ |
+| Excel | Microsoft Excel 2016+ or LibreOffice 6.0+ | Latest |
+
+### Hardware Requirements
+
+| Resource | Minimum | Recommended |
+|----------|---------|-------------|
+| CPU | 2 cores | 4+ cores |
+| RAM | 4 GB | 8+ GB |
+| Disk Space | 2 GB | 5+ GB |
+| Network | 1 Mbps | 10+ Mbps |
+
+### Network Requirements
+- Network connectivity to Cisco APIC controller
+- HTTPS (443) access to APIC
+- SSH access (optional, for troubleshooting)
+
+## ⚡ Quick Installation
+
+### Manual Quick Install
 
 ```bash
-# Update system packages
-sudo apt update && sudo apt upgrade -y
+# 1. Install Python dependencies
+pip install pandas openpyxl
 
-# Install Python and pip
-sudo apt install python3 python3-pip python3-venv git -y
+# 2. Install Ansible
+pip install ansible
 
-# Verify Python version
-python3 --version  # Should be 3.8+
-
-# Clone the repository
-git clone https://github.com/your-org/aci-fabric-automation.git
-cd aci-fabric-automation
-
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install Python dependencies
-pip install --upgrade pip
-pip install pandas openpyxl ansible
-
-# Install Ansible ACI collection
+# 3. Install Cisco ACI collection
 ansible-galaxy collection install cisco.aci
 
-# Configure environment
-cp .env.example .env
+# 4. Download the automation engine
+git clone https://github.com/your-org/aci-automation.git
+cd aci-automation/production_ready
+
+# 5. Verify installation
+python3 fabric_automation.py --help
 ```
 
-### RHEL/CentOS/Fedora
+## 🔧 Detailed Installation
 
+### Step 1: Install Python
+
+#### Ubuntu/Debian
 ```bash
-# Install Python and development tools
-sudo dnf install python3 python3-pip python3-devel git -y
-# For RHEL/CentOS 7: sudo yum install python3 python3-pip python3-devel git -y
+# Update package list
+sudo apt update
 
-# Clone and setup
-git clone https://github.com/your-org/aci-fabric-automation.git
-cd aci-fabric-automation
+# Install Python 3.10
+sudo apt install -y python3.10 python3.10-venv python3-pip
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install --upgrade pip
-pip install pandas openpyxl ansible
-
-# Install ACI collection
-ansible-galaxy collection install cisco.aci
-
-# Configure environment
-cp .env.example .env
+# Verify installation
+python3 --version  # Should show Python 3.10.x
 ```
 
-## 🍎 macOS Installation
-
-### Using Homebrew (Recommended)
-
+#### CentOS/RHEL
 ```bash
-# Install Homebrew if not already installed
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Python 3.10
+sudo dnf install -y python310 python310-pip
 
-# Install Python
-brew install python3 git
-
-# Clone the repository
-git clone https://github.com/your-org/aci-fabric-automation.git
-cd aci-fabric-automation
-
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install --upgrade pip
-pip install pandas openpyxl ansible
-
-# Install ACI collection
-ansible-galaxy collection install cisco.aci
-
-# Configure environment
-cp .env.example .env
+# Verify installation
+python3.10 --version
 ```
 
-### Using Python.org Installer
-
+#### macOS
 ```bash
-# Download and install Python from https://www.python.org/downloads/
-# Ensure "Add Python to PATH" is checked during installation
+# Using Homebrew
+brew install python@3.10
 
-# Open Terminal and verify installation
+# Verify installation
 python3 --version
-
-# Clone and setup
-git clone https://github.com/your-org/aci-fabric-automation.git
-cd aci-fabric-automation
-
-# Continue with virtual environment setup as above
 ```
 
-## 🪟 Windows Installation
+#### Windows (WSL2)
+```bash
+# Install WSL2 with Ubuntu
+wsl --install -d Ubuntu-22.04
 
-### Using Windows Subsystem for Linux (WSL2) - Recommended
+# Inside WSL, install Python
+sudo apt update
+sudo apt install -y python3.10 python3.10-venv python3-pip
+```
+
+### Step 2: Create Python Virtual Environment (Recommended)
 
 ```bash
-# Install WSL2 (PowerShell as Administrator)
-wsl --install -d Ubuntu
+# Create virtual environment
+python3 -m venv aci-automation-env
 
-# Restart computer and open Ubuntu terminal
-# Follow Ubuntu installation steps above
+# Activate virtual environment
+source aci-automation-env/bin/activate  # Linux/macOS
+# OR
+aci-automation-env\Scripts\activate.bat  # Windows
+
+# Upgrade pip
+pip install --upgrade pip
 ```
 
-### Using Native Windows
+### Step 3: Install Python Dependencies
 
-```powershell
-# Install Python from Microsoft Store or python.org
-# Open PowerShell as Administrator
+#### Install pandas and openpyxl
+```bash
+# Install required packages
+pip install pandas openpyxl
 
-# Clone repository
-git clone https://github.com/your-org/aci-fabric-automation.git
-cd aci-fabric-automation
+# Verify installation
+python3 -c "import pandas; print(f'pandas {pandas.__version__}')"
+python3 -c "import openpyxl; print(f'openpyxl {openpyxl.__version__}')"
+```
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate
+**Expected output:**
+```
+pandas 2.0.3
+openpyxl 3.1.2
+```
 
-# Install dependencies
-pip install --upgrade pip
-pip install pandas openpyxl ansible
+#### Optional: Install from requirements.txt
+```bash
+# If requirements.txt is provided
+pip install -r requirements.txt
+```
 
-# Install ACI collection
+**Sample requirements.txt:**
+```
+pandas>=2.0.0
+openpyxl>=3.1.0
+ansible>=2.12.0
+```
+
+### Step 4: Install Ansible
+
+#### Method 1: Using pip (Recommended)
+```bash
+# Install Ansible
+pip install ansible
+
+# Verify installation
+ansible --version
+```
+
+**Expected output:**
+```
+ansible [core 2.15.3]
+  config file = None
+  configured module search path = [...]
+  ansible python module location = ...
+  executable location = ...
+  python version = 3.10.12
+```
+
+#### Method 2: Using system package manager
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install -y ansible
+```
+
+**CentOS/RHEL:**
+```bash
+sudo dnf install -y ansible
+```
+
+**macOS:**
+```bash
+brew install ansible
+```
+
+### Step 5: Install Cisco ACI Collection
+
+```bash
+# Install cisco.aci collection
 ansible-galaxy collection install cisco.aci
 
-# Configure environment
-copy .env.example .env
+# Verify installation
+ansible-galaxy collection list | grep cisco.aci
 ```
 
-## 🐳 Docker Installation
+**Expected output:**
+```
+cisco.aci    2.7.0
+```
 
-### Using Docker Container
+#### Install Specific Version
+```bash
+# Install specific version (if needed)
+ansible-galaxy collection install cisco.aci:2.7.0
+```
+
+#### Offline Installation
+```bash
+# Download collection
+ansible-galaxy collection download cisco.aci --download-path ./collections/
+
+# Install from downloaded file
+ansible-galaxy collection install ./collections/cisco-aci-2.7.0.tar.gz
+```
+
+### Step 6: Download Automation Engine
+
+#### Option 1: Git Clone (Recommended)
+```bash
+# Clone repository
+git clone https://github.com/your-org/aci-automation.git
+
+# Navigate to production_ready
+cd aci-automation/production_ready
+```
+
+#### Option 2: Download ZIP
+```bash
+# Download and extract
+wget https://github.com/your-org/aci-automation/archive/main.zip
+unzip main.zip
+cd aci-automation-main/production_ready
+```
+
+#### Option 3: Direct Download
+```bash
+# Download only production_ready files
+wget https://github.com/your-org/aci-automation/raw/main/production_ready/fabric_automation.py
+mkdir -p tasks csv
+# Download other required files...
+```
+
+### Step 7: Setup Excel Template
 
 ```bash
-# Create Dockerfile
-cat > Dockerfile << 'EOF'
-FROM python:3.9-slim
+# Copy Excel template
+cp aci_fabric_config.xlsx my_fabric.xlsx
 
-WORKDIR /app
+# Edit with your preferred tool
+# - Microsoft Excel
+# - LibreOffice Calc
+# - Google Sheets (export to .xlsx)
+```
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+## ✅ Verification
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+### Verify Complete Installation
 
-# Install Ansible ACI collection
-RUN ansible-galaxy collection install cisco.aci
+```bash
+# Run verification script
+python3 << 'EOF'
+import sys
+import subprocess
 
-# Copy application code
-COPY . .
+def check_module(module_name):
+    try:
+        __import__(module_name)
+        print(f"✅ {module_name} installed")
+        return True
+    except ImportError:
+        print(f"❌ {module_name} NOT installed")
+        return False
 
-# Create directories
-RUN mkdir -p logs csv
+def check_command(command):
+    try:
+        result = subprocess.run([command, '--version'],
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"✅ {command} installed")
+            return True
+    except:
+        pass
+    print(f"❌ {command} NOT installed")
+    return False
 
-ENTRYPOINT ["python3", "excel_to_csv.py"]
+print("="*60)
+print("ACI Fabric Automation Engine - Installation Verification")
+print("="*60)
+
+print("\n📦 Python Modules:")
+pandas_ok = check_module('pandas')
+openpyxl_ok = check_module('openpyxl')
+
+print("\n🔧 Command-line Tools:")
+ansible_ok = check_command('ansible')
+ansible_playbook_ok = check_command('ansible-playbook')
+
+print("\n📊 Summary:")
+all_ok = pandas_ok and openpyxl_ok and ansible_ok and ansible_playbook_ok
+
+if all_ok:
+    print("✅ All components installed successfully!")
+    print("🚀 Ready to use fabric_automation.py")
+else:
+    print("❌ Some components missing")
+    print("📖 Please review installation steps")
+
+print("="*60)
 EOF
-
-# Build container
-docker build -t aci-automation .
-
-# Run container
-docker run -v $(pwd)/config:/app/config \
-           -v $(pwd)/logs:/app/logs \
-           -v $(pwd)/csv:/app/csv \
-           --env-file .env \
-           aci-automation config/your_fabric.xlsx
 ```
 
-### Using Docker Compose
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  aci-automation:
-    build: .
-    volumes:
-      - ./config:/app/config
-      - ./logs:/app/logs
-      - ./csv:/app/csv
-    env_file:
-      - .env
-    environment:
-      - PYTHONUNBUFFERED=1
-```
-
-## 📋 Requirements File
-
-Create `requirements.txt`:
-
-```txt
-# Core dependencies
-ansible>=6.0.0
-ansible-core>=2.12.0
-pandas>=1.3.0
-openpyxl>=3.0.0
-
-# Optional performance enhancements
-PyYAML>=6.0
-Jinja2>=3.0.0
-requests>=2.25.0
-
-# Development dependencies (optional)
-pytest>=6.0.0
-black>=22.0.0
-flake8>=4.0.0
-```
-
-## ⚙️ Configuration Setup
-
-### 1. Environment Configuration
+### Test fabric_automation.py
 
 ```bash
-# Copy and edit environment file
-cp .env.example .env
+# Test with sample Excel file
+python3 fabric_automation.py aci_fabric_config.xlsx
 
-# Edit with your APIC details
-vim .env  # or nano .env on some systems
+# Expected: Successful deployment directory creation
 ```
 
-**Required Environment Variables:**
+### Verify Ansible Collection
 
 ```bash
-# APIC Connection
-ACI_HOSTNAME=your-apic.company.com
-ACI_USERNAME=admin
-ACI_PASSWORD=your_secure_password
-
-# SSL Configuration
-ACI_VALIDATE_CERTS=false  # Set to true for production
-
-# Deployment Options
-GLOBAL_STATE=present
-CSV_DIR=csv
-
-# Performance Settings
-ANSIBLE_TIMEOUT=300
-ANSIBLE_FORKS=5
-ANSIBLE_GATHERING=explicit
+# Test Ansible can find cisco.aci modules
+ansible-doc cisco.aci.aci_tenant
 ```
 
-### 2. Ansible Configuration
+**Expected:** Documentation for aci_tenant module
 
-The included `ansible.cfg` is pre-configured, but you may customize:
+### Test APIC Connectivity
 
-```ini
-[defaults]
-inventory = inventory.yml
-host_key_checking = False
-timeout = 30
-gathering = explicit
-retry_files_enabled = False
-stdout_callback = yaml
-result_format = yaml
-log_path = logs/ansible.log
-verbosity = 2
-
-[inventory]
-enable_plugins = yaml, ini
-```
-
-### 3. Inventory Setup
-
-Edit `inventory.yml` to match your environment:
-
-```yaml
----
+```bash
+# Create test inventory
+cat > test_inventory.yml << 'EOF'
 all:
   hosts:
     localhost:
       ansible_connection: local
-  vars:
-    # Use environment variables for security
-    aci_hostname: "{{ lookup('env', 'ACI_HOSTNAME') }}"
-    aci_username: "{{ lookup('env', 'ACI_USERNAME') }}"
-    aci_password: "{{ lookup('env', 'ACI_PASSWORD') }}"
-    aci_validate_certs: "{{ lookup('env', 'ACI_VALIDATE_CERTS') | default(false) | bool }}"
+      aci_hostname: "YOUR_APIC_IP"
+      aci_username: "YOUR_USERNAME"
+      aci_password: "YOUR_PASSWORD"
+      aci_validate_certs: false
+EOF
+
+# Test connection (requires valid APIC credentials)
+ansible localhost -i test_inventory.yml -m cisco.aci.aci_tenant -a "tenant=TEST_TENANT state=query"
 ```
 
-## ✅ Installation Verification
+**Expected:** JSON output with tenant information or "Tenant not found"
 
-### 1. Basic Verification
+## ⚙️ Configuration
+
+### Configure Python Environment
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate  # Linux/macOS
-# venv\Scripts\activate    # Windows
+# Set Python path (if needed)
+export PYTHONPATH=/path/to/aci-automation:$PYTHONPATH
 
-# Verify Python packages
-python3 -c "import pandas, openpyxl, ansible; print('All packages imported successfully')"
+# Add to ~/.bashrc for persistence
+echo 'export PYTHONPATH=/path/to/aci-automation:$PYTHONPATH' >> ~/.bashrc
+```
 
-# Verify Ansible installation
-ansible --version
+### Configure Ansible
 
-# Verify ACI collection
+Create `~/.ansible.cfg`:
+
+```ini
+[defaults]
+host_key_checking = False
+retry_files_enabled = False
+deprecation_warnings = False
+stdout_callback = yaml
+bin_ansible_callbacks = True
+collections_paths = ~/.ansible/collections:/usr/share/ansible/collections
+
+[privilege_escalation]
+become = False
+```
+
+### Configure Excel Application
+
+#### Microsoft Excel
+- Ensure "Developer" tab is enabled for macro support (optional)
+- Set default save format to `.xlsx`
+
+#### LibreOffice Calc
+```bash
+# Install LibreOffice (Ubuntu/Debian)
+sudo apt install -y libreoffice-calc
+
+# Configure for Excel compatibility
+# Tools → Options → Load/Save → Microsoft Office
+# ✅ Enable all Excel format options
+```
+
+### Setup Environment Variables
+
+```bash
+# Create .env file (optional)
+cat > .env << 'EOF'
+# APIC Connection (used by scripts)
+APIC_HOST=192.168.1.100
+APIC_USER=admin
+APIC_PASS=YourPassword
+
+# Automation Settings
+DEPLOYMENT_DIR=./deployments
+LOG_LEVEL=INFO
+EOF
+
+# Load environment
+source .env
+```
+
+## 🐛 Troubleshooting
+
+### Issue 1: Python version too old
+
+**Error:**
+```
+SyntaxError: f-string: empty expression not allowed
+```
+
+**Solution:**
+```bash
+# Check Python version
+python3 --version
+
+# Install Python 3.10+ (see Step 1)
+sudo apt install python3.10
+
+# Use specific version
+python3.10 fabric_automation.py config.xlsx
+```
+
+### Issue 2: pandas import error
+
+**Error:**
+```
+ModuleNotFoundError: No module named 'pandas'
+```
+
+**Solution:**
+```bash
+# Install pandas
+pip install pandas
+
+# Or with specific version
+pip install pandas==2.0.3
+
+# Verify
+python3 -c "import pandas; print(pandas.__version__)"
+```
+
+### Issue 3: openpyxl import error
+
+**Error:**
+```
+ModuleNotFoundError: No module named 'openpyxl'
+```
+
+**Solution:**
+```bash
+# Install openpyxl
+pip install openpyxl
+
+# Verify
+python3 -c "import openpyxl; print(openpyxl.__version__)"
+```
+
+### Issue 4: Ansible collection not found
+
+**Error:**
+```
+ERROR! couldn't resolve module/action 'cisco.aci.aci_tenant'
+```
+
+**Solution:**
+```bash
+# Install collection
+ansible-galaxy collection install cisco.aci
+
+# Verify installation
 ansible-galaxy collection list | grep cisco.aci
 
-# Test script syntax
-python3 excel_to_csv.py --help
+# Check collection path
+ansible-config dump | grep COLLECTIONS_PATHS
 ```
 
-### 2. Connectivity Test
+### Issue 5: Permission denied
 
-```bash
-# Test APIC connectivity (ensure .env is configured)
-ansible all -i inventory.yml -m ping
-
-# Test ACI module availability
-ansible-doc cisco.aci.aci_tenant
+**Error:**
+```
+Permission denied: 'fabric_automation.py'
 ```
 
-### 3. End-to-End Test
-
+**Solution:**
 ```bash
-# Test with sample Excel file
-python3 excel_to_csv.py aci_fabric_config.xlsx
+# Make executable
+chmod +x fabric_automation.py
 
-# Verify CSV generation
-ls -la csv/
-
-# Test playbook syntax
-ansible-playbook --syntax-check aci_fabric_config.yml
-
-# Dry-run test (no changes made)
-ansible-playbook -i inventory.yml aci_fabric_config.yml --check
+# Or run with python3
+python3 fabric_automation.py config.xlsx
 ```
 
-## 🔧 Troubleshooting Installation
+### Issue 6: Excel file format error
 
-### Common Issues
-
-#### Python Version Issues
-```bash
-# Error: Python 3.8+ required
-# Solution: Install correct Python version
-sudo apt install python3.9 python3.9-venv python3.9-pip
-python3.9 -m venv venv
+**Error:**
+```
+ValueError: Excel file format cannot be determined
 ```
 
-#### Pandas Installation Errors
+**Solution:**
 ```bash
-# Error: Microsoft Visual C++ required (Windows)
-# Solution: Install Visual C++ Build Tools
-# Download from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+# Ensure file is .xlsx format
+file config.xlsx
 
-# Error: Failed building wheel for pandas
-# Solution: Use conda instead of pip
-conda install pandas openpyxl
+# Convert if needed (LibreOffice)
+libreoffice --headless --convert-to xlsx config.xls
+
+# Verify
+python3 -c "import openpyxl; wb = openpyxl.load_workbook('config.xlsx'); print('OK')"
 ```
 
-#### Ansible Collection Issues
-```bash
-# Error: cisco.aci collection not found
-# Solution: Reinstall collection
-ansible-galaxy collection install cisco.aci --force
+### Issue 7: APIC connection timeout
 
-# Verify installation path
-ansible-galaxy collection list --format json | jq '.cisco.aci'
+**Error:**
+```
+Connection timeout to APIC
 ```
 
-#### Permission Issues (Linux/macOS)
+**Solution:**
 ```bash
-# Error: Permission denied
-# Solution: Fix ownership
-sudo chown -R $USER:$USER aci-fabric-automation/
-chmod +x excel_to_csv.py
+# Test network connectivity
+ping YOUR_APIC_IP
+
+# Test HTTPS access
+curl -k https://YOUR_APIC_IP
+
+# Check firewall rules
+sudo iptables -L | grep 443
+
+# Verify credentials in inventory.yml
 ```
 
-### Environment-Specific Issues
+### Issue 8: SSL certificate error
 
-#### WSL2 on Windows
-```bash
-# Issue: Can't access Windows files
-# Solution: Use WSL2 filesystem
-cd /home/$USER
-git clone https://github.com/your-org/aci-fabric-automation.git
-
-# Issue: Ansible too slow
-# Solution: Exclude Windows Defender
-# Add WSL2 directory to Windows Defender exclusions
+**Error:**
+```
+SSL: CERTIFICATE_VERIFY_FAILED
 ```
 
-#### macOS Catalina/Big Sur
-```bash
-# Issue: SSL certificate errors
-# Solution: Update certificates
-/Applications/Python\ 3.x/Install\ Certificates.command
+**Solution:**
+```yaml
+# In inventory.yml, set:
+aci_validate_certs: false  # For self-signed certificates
 
-# Issue: Command line tools required
-xcode-select --install
+# Or install APIC certificate
+sudo cp apic-cert.crt /usr/local/share/ca-certificates/
+sudo update-ca-certificates
 ```
 
-## 🚀 Production Deployment
+## 📚 Post-Installation
 
-### Security Hardening
+### Recommended: Create Alias
 
 ```bash
-# Use Ansible Vault for sensitive data
-ansible-vault create vault.yml
+# Add to ~/.bashrc or ~/.zshrc
+alias aci-generate='python3 /path/to/production_ready/fabric_automation.py'
 
-# Add encrypted variables
-ansible-vault edit vault.yml
-
-# Update inventory to use vault
-echo "aci_password: !vault |" >> inventory.yml
+# Usage
+aci-generate my_fabric.xlsx
 ```
 
-### Performance Optimization
+### Recommended: Setup Logging
 
 ```bash
-# Optimize for large deployments
-export ANSIBLE_FORKS=10
-export ANSIBLE_GATHERING=explicit
-export ANSIBLE_HOST_KEY_CHECKING=False
+# Create logs directory
+mkdir -p ~/aci-automation/logs
 
-# Use persistent connections
-echo "use_persistent_connections = True" >> ansible.cfg
-```
-
-### Monitoring Setup
-
-```bash
-# Enable structured logging
-mkdir -p logs
-echo "log_path = logs/ansible.log" >> ansible.cfg
-echo "stdout_callback = json" >> ansible.cfg
-
-# Setup log rotation
-sudo tee /etc/logrotate.d/aci-automation << 'EOF'
-/path/to/aci-automation/logs/*.log {
+# Configure log rotation
+cat > ~/aci-automation/logrotate.conf << 'EOF'
+~/aci-automation/logs/*.log {
     daily
     rotate 30
     compress
-    delaycompress
     missingok
     notifempty
-    copytruncate
 }
 EOF
 ```
 
-## 📚 Next Steps
+### Recommended: Backup Strategy
+
+```bash
+# Backup Excel templates
+mkdir -p ~/aci-automation/backups
+cp *.xlsx ~/aci-automation/backups/backup-$(date +%Y%m%d).xlsx
+
+# Automate backups (cron)
+(crontab -l 2>/dev/null; echo "0 0 * * * cp ~/aci-automation/*.xlsx ~/aci-automation/backups/backup-\$(date +\%Y\%m\%d).xlsx") | crontab -
+```
+
+## 🎓 Next Steps
 
 After successful installation:
 
-1. **Configure Excel Template**: Follow [Excel Template Guide](EXCEL_TEMPLATE.md)
-2. **Run First Deployment**: See [Usage Guide](README.md#usage)
-3. **Set Up Monitoring**: Configure logging and alerts
-4. **Plan Production Rollout**: Test in lab environment first
+1. **Read Documentation**: Review [README.md](README.md) for usage instructions
+2. **Study Architecture**: See [ARCHITECTURE.md](ARCHITECTURE.md) for system design
+3. **Review Template**: Check [EXCEL_TEMPLATE.md](EXCEL_TEMPLATE.md) for Excel structure
+4. **Try Examples**: Run example deployments
+5. **Deploy Test Environment**: Test on development APIC first
 
-## 🆘 Getting Help
+## 📞 Support
 
-If you encounter issues during installation:
+If you encounter issues:
 
-1. **Check Requirements**: Ensure all system requirements are met
-2. **Review Logs**: Check installation and execution logs
-3. **Search Issues**: Look through [GitHub Issues](https://github.com/your-org/aci-fabric-automation/issues)
-4. **Ask for Help**: Create a new issue with installation details
+1. Check [Troubleshooting](#troubleshooting) section above
+2. Review [README.md](README.md) for common issues
+3. Check GitHub Issues for similar problems
+4. Create new issue with:
+   - Python version (`python3 --version`)
+   - Ansible version (`ansible --version`)
+   - Error messages (full output)
+   - Steps to reproduce
 
-**Include in support requests:**
-- Operating system and version
-- Python version (`python3 --version`)
-- Installation method used
-- Complete error messages
-- Contents of `.env` file (without passwords)
+---
+
+**Installation Complete! 🎉**
+
+Ready to automate your ACI fabric deployment!
