@@ -28,6 +28,7 @@
     pod_id: "{{ item.pod_id }}"
     node_id: "{{ item.node_id }}"
     encap: "{{ item.encap }}"
+    access_encap: "{{ item.access_encap | default(omit) }}"
     domain: "{{ item.domain | default(omit) }}"
     domain_type: "{{ item.domain_type | default(omit) }}"
     floating_ip: "{{ item.floating_ip | default(omit) }}"
