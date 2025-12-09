@@ -23,16 +23,18 @@
     tenant: "{{ item.tenant }}"
     ap: "{{ item.ap }}"
     epg: "{{ item.epg }}"
-    encap: "{{ item.encap | default(omit) }}"
-    # primary_encap: "{{ item.primary_encap_id | default(omit) }}"
+    encap: "{{ item.encap }}"
+    # primary_encap: "{{ item.primary_encap | default(omit) }}"
     interface_mode: "{{ item.interface_mode | default('trunk') }}"
-    state: "{{ item.state | default(global_state) }}"
+    state: "{{ deployment_state | default('present') }}"
   loop: "{{ aep_to_epg_csv.list }}"
   when:
     - aep_to_epg_csv is defined
     - aep_to_epg_csv.list is defined
     - item.aep is defined
     - item.aep | length > 0
+    - item.encap is defined
+    - item.encap | length > 0
   tags:
     - aep_to_epg
     - aci_aep_to_epg
