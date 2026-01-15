@@ -239,7 +239,6 @@ class ExcelToCSVSimple:
             'aci_vrf',
             'aci_bd',
             'aci_bd_subnet',
-            'aci_bd_to_l3out',
             'aci_ap',
             'aci_epg',
             'aci_aep_to_epg',
@@ -274,6 +273,9 @@ class ExcelToCSVSimple:
             'aci_l3out_logical_interface_vpc_member',
             'aci_l3out_floating_svi_secondary_ip',
             'aci_l3out_floating_svi_path_secondary_ip',
+
+            # BD to L3Out - APRÈS la création des L3Out
+            'aci_bd_to_l3out',
 
             # Route Control - Après L3Out
             'aci_match_rule',
