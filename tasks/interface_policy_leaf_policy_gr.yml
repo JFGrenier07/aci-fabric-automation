@@ -7,9 +7,9 @@
   register: leaf_policy_gr_csv
   when: (csv_dir + '/interface_policy_leaf_policy_gr.csv') is file
 
-- name: "Afficher les Leaf Policy Groups dÃ©tectÃ©s"
+- name: "Afficher les Leaf Policy Groups detectes"
   debug:
-    msg: "Leaf Policy Groups Ã  traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
+    msg: "Leaf Policy Groups a traiter: {{ leaf_policy_gr_csv.list | map(attribute='policy_group') | list }}"
   when: leaf_policy_gr_csv is defined and leaf_policy_gr_csv.list is defined
 
 - name: "Create Leaf Policy Group"
@@ -20,14 +20,14 @@
     validate_certs: "{{ aci_validate_certs | default(false) }}"
     annotation: ""
     use_ssl: true
-    
-    # ParamÃ¨tres obligatoires
+
+    # Parametres obligatoires
     policy_group: "{{ item.policy_group }}"
     lag_type: "{{ item.lag_type }}"
-    
+
     # Description
     description: "{{ item.description | default('') }}"
-    
+
     # AEP (Attachable Entity Profile)
     aep: "{{ item.aep | default(omit) }}"
 
@@ -38,8 +38,8 @@
     mcp_policy: "{{ item.mcp_policy | default(omit) }}"
     stp_interface_policy: "{{ item.stp_interface_policy | default(omit) }}"
     port_channel_policy: "{{ item.port_channel_policy if (item.lag_type in ['link', 'node'] and item.port_channel_policy) else omit }}"
-    
-    # Policies avancÃ©es optionnelles
+
+    # Policies avancees optionnelles
     # monitoring_policy: "{{ item.monitoring_policy | default(omit) }}"
     # storm_control_interface_policy: "{{ item.storm_control_interface_policy | default(omit) }}"
     l2_interface_policy: "{{ item.l2_interface_policy | default(omit) }}"
@@ -50,10 +50,10 @@
     # priority_flow_control_policy: "{{ item.priority_flow_control_policy | default(omit) }}"
     # egress_data_plane_policing_policy: "{{ item.egress_data_plane_policing_policy | default(omit) }}"
     # ingress_data_plane_policing_policy: "{{ item.ingress_data_plane_policing_policy | default(omit) }}"
-    
-    # Ãtat global
+
+    # Etat global
     state: "{{ item.state | default(global_state) }}"
-    
+
   loop: "{{ leaf_policy_gr_csv.list }}"
   when:
     - leaf_policy_gr_csv is defined
