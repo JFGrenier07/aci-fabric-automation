@@ -28,6 +28,9 @@
     # Description
     description: "{{ item.description | default('') }}"
     
+    # AEP (Attachable Entity Profile)
+    aep: "{{ item.aep | default(omit) }}"
+
     # Policies d'interface optionnelles
     link_level_policy: "{{ item.link_level_policy | default(omit) }}"
     cdp_policy: "{{ item.cdp_policy | default(omit) }}"
