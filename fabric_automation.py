@@ -258,9 +258,11 @@ class ExcelToCSVSimple:
 
             # L3Out Configuration
             'aci_l3out',
+            'aci_l3out_default_route_leak_policy',  # Default Route Leak Policy on L3Out
             'aci_l3out_logical_node_profile',
             'aci_l3out_logical_node',
             'aci_l3out_logical_interface_profile',
+            'aci_l3out_bfd_interface_profile',  # BFD Interface Profile association
             'aci_l3out_interface',
             'aci_l3out_bgp_protocol_profile',
             'aci_l3out_bgp_peer',

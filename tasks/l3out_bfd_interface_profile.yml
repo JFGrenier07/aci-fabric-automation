@@ -1,0 +1,39 @@
+---
+# Task to manage L3Out BFD Interface Profile association
+# Associates a BFD Interface Policy to an L3Out Logical Interface Profile
+
+- name: "Read CSV l3out_bfd_interface_profile"
+  read_csv:
+    path: "{{ csv_dir }}/l3out_bfd_interface_profile.csv"
+    delimiter: ','
+  register: l3out_bfd_interface_profile_csv
+  when: (csv_dir + '/l3out_bfd_interface_profile.csv') is file
+
+- name: "Display detected L3Out BFD Interface Profiles"
+  debug:
+    msg: "L3Out BFD Interface Profiles to process: {{ l3out_bfd_interface_profile_csv.list | map(attribute='interface_profile') | list }}"
+  when: l3out_bfd_interface_profile_csv is defined and l3out_bfd_interface_profile_csv.list is defined
+
+- name: "Associate BFD Interface Policy to L3Out Interface Profile"
+  cisco.aci.aci_l3out_bfd_interface_profile:
+    host: "{{ aci_hostname }}"
+    username: "{{ aci_username }}"
+    password: "{{ aci_password }}"
+    validate_certs: "{{ aci_validate_certs | default(false) }}"
+    annotation: ""
+    use_ssl: true
+    tenant: "{{ item.tenant }}"
+    l3out: "{{ item.l3out }}"
+    l3out_logical_node_profile: "{{ item.node_profile }}"
+    l3out_logical_interface_profile: "{{ item.interface_profile }}"
+    bfd_interface_policy: "{{ item.bfd_interface_policy }}"
+    state: "{{ item.state | default(global_state) }}"
+  loop: "{{ l3out_bfd_interface_profile_csv.list }}"
+  when:
+    - l3out_bfd_interface_profile_csv is defined
+    - l3out_bfd_interface_profile_csv.list is defined
+    - item.tenant is defined and item.tenant | length > 0
+    - item.l3out is defined and item.l3out | length > 0
+    - item.node_profile is defined and item.node_profile | length > 0
+    - item.interface_profile is defined and item.interface_profile | length > 0
+    - item.bfd_interface_policy is defined and item.bfd_interface_policy | length > 0
