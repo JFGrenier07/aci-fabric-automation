@@ -40,7 +40,7 @@
                 - bgpLocalAsnP:
                     attributes:
                       localAsn: "{{ item.local_as_number | default('0') }}"
-                      asnPropagate: "none"
+                      asnPropagate: "{{ item.local_as_number_config | default('none') }}"
                 - bgpAsP:
                     attributes:
                       asn: "{{ item.remote_asn }}"

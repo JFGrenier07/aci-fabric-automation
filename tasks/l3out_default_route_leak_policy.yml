@@ -27,6 +27,7 @@
     content:
       l3extDefaultRouteLeakP:
         attributes:
+          annotation: ""
           always: "{{ item.always | default('yes') }}"
           criteria: "{{ item.criteria | default('only') }}"
           scope: "{{ item.scope | default('l3-out') }}"
